@@ -34,6 +34,17 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+
+task copyYml(type: Copy){
+	copy{
+		from './BEconfig'
+		include '*.properties'
+		into 'src/main/resources'
+	}
+}
+
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
+

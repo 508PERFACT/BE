@@ -1,0 +1,3 @@
+[submodule "BEconfig"]
+	path = BEconfig
+	url = https://github.com/508PERFACT/BEconfig.git
