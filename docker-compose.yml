@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: perfact_mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: perfact
+      MYSQL_USER: test
+      MYSQL_PASSWORD: testpw
+    ports:
+      - "3306:3306"
+    volumes:
+      - perfact_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - perfact-network
+
+  redis:
+    image: redis:7.0
+    container_name: perfact_redis_container
+    command: redis-server --requirepass testpw
+    ports:
+      - "6379:6379"
+    networks:
+      - perfact-network
+
+volumes:
+  perfact_data:
+
+networks:
+  perfact-network:
+    driver: bridge
