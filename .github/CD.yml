@@ -1,0 +1,21 @@
+name: CD with Gradle
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout With Submodules
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Update Git Submodules
+        run: git submodule update --init --recursive
