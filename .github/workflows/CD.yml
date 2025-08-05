@@ -72,10 +72,8 @@ jobs:
               --network app-net \
               -p ${{ secrets.REDIS_PORT }}:6379 \
               -v redis-data:/data \
-              redis:latest \
-              redis-server \
-                --requirepass "${{ secrets.REDIS_PASSWORD }}" \
-                --loadmodule /usr/local/lib/redis/modules/redisbloom.so
+              redislabs/rebloom:latest \
+              --requirepass "${{ secrets.REDIS_PASSWORD }}"
 
             echo "Run SpringBoot container"
             docker run -d --restart unless-stopped \
