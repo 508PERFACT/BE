@@ -8,6 +8,7 @@ import com.perfact.be.domain.user.entity.enums.UserStatus;
 import com.perfact.be.domain.user.exception.UserHandler;
 import com.perfact.be.domain.user.exception.status.UserErrorStatus;
 import com.perfact.be.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
 
   @Override
+  @Transactional
   public User findOrCreateUser(NaverUserProfile profile) {
     try {
       return userRepository.findBySocialIdAndSocialType(profile.getId(), SocialType.NAVER)
@@ -27,9 +29,15 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  @Override
+  @Transactional
+  public User findById(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new UserHandler(UserErrorStatus.USER_NOT_FOUND));
+  }
+
   private User registerNewUser(NaverUserProfile profile) {
     try {
-      // 사용자 구독 정보 등 초기 세팅 필요
       User newUser = User.builder()
           .email(profile.getEmail())
           .nickname(profile.getNickname())

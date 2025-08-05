@@ -6,4 +6,6 @@ import com.perfact.be.domain.user.entity.User;
 public interface UserService {
 
   User findOrCreateUser(NaverUserProfile profile);
+
+  Object findById(Long userId);
 }
