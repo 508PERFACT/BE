@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum AuthErrorStatus implements BaseErrorCode {
-  NAVER_TOKEN_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_001", "네이버 Access Token 요청 실패"),
-  NAVER_USERINFO_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_002", "네이버 사용자 정보 요청 실패");
+  NAVER_TOKEN_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_4001", "네이버 Access Token 요청 실패"),
+  NAVER_USERINFO_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_4002", "네이버 사용자 정보 요청 실패");
 
 
   private final HttpStatus httpStatus;

@@ -17,31 +17,26 @@ public class User extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
   private Long id;
-
   @Column(name = "social_id", length = 255)
   private String socialId;
-
   @Enumerated(EnumType.STRING)
   private SocialType socialType;
-
   @Column(name = "nickname", length = 10)
   private String nickname;
-
-  @Column(name = "birth")
-  private Integer birth;
-
   @Column(name = "email", length = 255)
   private String email;
-
-  @Column(name = "is_subscribe", length = 255)
-  private String isSubscribe;
-
-  @Column(name = "is_notification_agreed")
-  private Boolean isNotificationAgreed;
-
-  @Column(name = "credit")
-  private Long credit;
-
   private String role;
+
+
+
+  @Column(name = "is_subscribe", columnDefinition = "boolean default false")
+  private Boolean isSubscribe = false;
+
+  @Column(columnDefinition = "boolean default false")
+  private Boolean isNotificationAgreed = false;
+
+  @Column(columnDefinition = "bigint default 3")
+  private Long credit = 3L;
+
 
 }

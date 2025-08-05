@@ -9,20 +9,25 @@ import com.perfact.be.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
 
   @Override
   public User findOrCreateUser(NaverUserProfile profile) {
-    return userRepository.findBySocialIdAndSocialType(profile.getId(), SocialType.NAVER)
-        .orElseGet(() -> registerNewUser(profile));
+    try {
+      return userRepository.findBySocialIdAndSocialType(profile.getId(), SocialType.NAVER)
+          .orElseGet(() -> registerNewUser(profile));
+    } catch (Exception e) {
+      throw new UserHandler(UserErrorStatus.USER_LOOKUP_FAILED);
+    }
   }
 
   private User registerNewUser(NaverUserProfile profile) {
     try {
+      // 사용자 구독 정보 등 초기 세팅 필요
       User newUser = User.builder()
           .email(profile.getEmail())
           .nickname(profile.getNickname())

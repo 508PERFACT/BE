@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum UserErrorStatus implements BaseErrorCode {
-  USER_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER_001", "유저 생성에 실패했습니다"),
-  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_002", "유저를 찾을 수 없습니다");
+  USER_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER_4001", "유저 생성에 실패했습니다"),
+  USER_LOOKUP_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"USER_4002", "유저 조회 중 오류가 발생했습니다."),
+  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_4003", "유저를 찾을 수 없습니다");
 
 
   private final HttpStatus httpStatus;
