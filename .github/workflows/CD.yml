@@ -80,7 +80,7 @@ jobs:
               --name spring-app \
               --network app-net \
               -p ${{ secrets.SPRINGBOOT_PORT }}:8080 \
-              -e REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
+              -e SPRING_REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
               -e SPRINGBOOT_PORT=${{ secrets.SPRINGBOOT_PORT }} \
               -e DB_URL="${{ secrets.DB_URL }}" \
               -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
