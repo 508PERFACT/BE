@@ -49,6 +49,8 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+  // Jsoup for HTML parsing
+	implementation 'org.jsoup:jsoup:1.17.2'
 
 }
 
