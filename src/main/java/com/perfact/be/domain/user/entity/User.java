@@ -19,13 +19,13 @@ public class User extends BaseEntity {
   private Long id;
 
   @Column(name = "social_id", length = 255)
-  private SocialType socialId;
+  private String socialId;
 
-  @Column(name = "social_type", length = 50)
-  private String socialType;
+  @Enumerated(EnumType.STRING)
+  private SocialType socialType;
 
-  @Column(name = "name", length = 10)
-  private String name;
+  @Column(name = "nickname", length = 10)
+  private String nickname;
 
   @Column(name = "birth")
   private Integer birth;
@@ -41,5 +41,7 @@ public class User extends BaseEntity {
 
   @Column(name = "credit")
   private Long credit;
+
+  private String role;
 
 }

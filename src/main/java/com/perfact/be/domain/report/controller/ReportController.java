@@ -4,6 +4,7 @@ import com.perfact.be.domain.report.dto.AnalyzeNewsRequestDTO;
 import com.perfact.be.domain.report.entity.Report;
 import com.perfact.be.domain.report.service.ReportService;
 import com.perfact.be.domain.user.entity.User;
+import com.perfact.be.domain.user.entity.enums.SocialType;
 import com.perfact.be.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,8 @@ public class ReportController {
     // 실제 사용자 정보는 인증에서 가져와야 함
     User mockUser = User.builder()
         .socialId("test_user")
-        .socialType("naver")
-        .name("테스트 사용자")
+        .socialType(SocialType.NAVER)
+        .nickname("테스트 사용자")
         .email("test@naver.com")
         .build();
 
