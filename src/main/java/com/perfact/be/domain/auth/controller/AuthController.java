@@ -24,7 +24,7 @@ public class AuthController {
   private final AuthService authService;
 
   @Operation(
-      summary = "네이버 로그인 콜백",
+      summary = "네이버 소셜 로그인",
       description = "네이버 로그인 성공 후 전달된 code, state 파라미터를 이용해 로그인 처리를 수행합니다."
   )
   @GetMapping(value = "/social-login/naver", produces = "application/json")

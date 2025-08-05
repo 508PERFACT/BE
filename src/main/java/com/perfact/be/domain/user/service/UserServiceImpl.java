@@ -2,7 +2,9 @@ package com.perfact.be.domain.user.service;
 
 import com.perfact.be.domain.auth.dto.NaverUserProfile;
 import com.perfact.be.domain.user.entity.User;
+import com.perfact.be.domain.user.entity.enums.Role;
 import com.perfact.be.domain.user.entity.enums.SocialType;
+import com.perfact.be.domain.user.entity.enums.UserStatus;
 import com.perfact.be.domain.user.exception.UserHandler;
 import com.perfact.be.domain.user.exception.status.UserErrorStatus;
 import com.perfact.be.domain.user.repository.UserRepository;
@@ -33,7 +35,8 @@ public class UserServiceImpl implements UserService {
           .nickname(profile.getNickname())
           .socialId(profile.getId())
           .socialType(SocialType.NAVER)
-          .role("USER")
+          .role(Role.ROLE_USER)
+          .status(UserStatus.ACTIVE)
           .build();
 
       return userRepository.save(newUser);

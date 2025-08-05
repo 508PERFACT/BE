@@ -1,6 +1,8 @@
 package com.perfact.be.domain.user.entity;
 
+import com.perfact.be.domain.user.entity.enums.Role;
 import com.perfact.be.domain.user.entity.enums.SocialType;
+import com.perfact.be.domain.user.entity.enums.UserStatus;
 import com.perfact.be.global.common.BaseEntity;
 import lombok.*;
 import jakarta.persistence.*;
@@ -25,7 +27,12 @@ public class User extends BaseEntity {
   private String nickname;
   @Column(name = "email", length = 255)
   private String email;
-  private String role;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private Role role;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = false)
+  private UserStatus status = UserStatus.ACTIVE;
 
 
 

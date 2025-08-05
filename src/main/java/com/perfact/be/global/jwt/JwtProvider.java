@@ -1,15 +1,25 @@
 package com.perfact.be.global.jwt;
 
+import com.perfact.be.domain.auth.service.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
   @Value("${jwt.secret}")
@@ -17,44 +27,59 @@ public class JwtProvider {
 
   @Value("${jwt.expiration}")
   private long expirationMillis;
+
   private Key key;
+
+  private final CustomUserDetailsService customUserDetailsService;
 
   @PostConstruct
   public void init() {
-    this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
   }
 
-
-  public String generateToken(Long userId, String email) {
+  public String generateToken(Long userId, String socialId) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + expirationMillis);
 
     return Jwts.builder()
         .setSubject(userId.toString())
-        .claim("email", email)
+        .claim("socialId", socialId)
+        .claim("type", "ACCESS")
         .setIssuedAt(now)
         .setExpiration(expiryDate)
         .signWith(key, SignatureAlgorithm.HS256)
         .compact();
   }
 
-  // 토큰에서 사용자 ID 추출
   public Long getUserIdFromToken(String token) {
-    Claims claims = parseClaims(token);
-    return Long.parseLong(claims.getSubject());
+    return Long.parseLong(parseClaims(token).getSubject());
   }
 
-  // 토큰 유효성 검사
-  public boolean validateToken(String token) {
+  public String getSocialIdFromToken(String token) {
+    return parseClaims(token).get("socialId", String.class);
+  }
+
+  public void validateToken(String token) {
     try {
-      parseClaims(token);
-      return true;
-    } catch (JwtException | IllegalArgumentException e) {
-      return false;
+      Claims claims = parseClaims(token);
+      String type = claims.get("type", String.class);
+      if (!"ACCESS".equals(type)) {
+        throw new BadCredentialsException("유효하지 않은 토큰 타입입니다.");
+      }
+    } catch (SecurityException | MalformedJwtException |
+             ExpiredJwtException | UnsupportedJwtException |
+             IllegalArgumentException e) {
+      log.warn("JWT 인증 실패: {}", e.getMessage());
+      throw new BadCredentialsException("유효하지 않은 JWT", e);
     }
   }
 
-  // 내부에서 사용 - 토큰 파싱
+  public Authentication getAuthentication(String token) {
+    String userId = getUserIdFromToken(token).toString();
+    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+  }
+
   private Claims parseClaims(String token) {
     return Jwts.parserBuilder()
         .setSigningKey(key)
@@ -63,3 +88,4 @@ public class JwtProvider {
         .getBody();
   }
 }
+
