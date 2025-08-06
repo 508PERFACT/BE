@@ -1,20 +1,23 @@
 package com.perfact.be.domain.auth.controller;
 
+import com.perfact.be.domain.auth.dto.AuthRequestDto;
 import com.perfact.be.domain.auth.dto.AuthResponseDto;
 import com.perfact.be.domain.auth.exception.status.AuthSuccessStatus;
 import com.perfact.be.domain.auth.service.AuthService;
+import com.perfact.be.domain.user.entity.User;
 import com.perfact.be.global.apiPayload.ApiResponse;
+import com.perfact.be.global.resolver.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.service.GenericResponseService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 @Tag(name="Auth", description = "인증 관련 API")
 @RestController
@@ -44,6 +47,31 @@ public class AuthController {
     AuthResponseDto.LoginResponse response = authService.socialLogin(code, state);
     return ApiResponse.of(AuthSuccessStatus.SOCIAL_LOGIN_SUCCESS, response);
   }
+
+  @Operation(
+      summary = "엑세스 토큰 재발급",
+      description = "리프레시 토큰을 이용해 엑세스 토큰을 재발급합니다."
+  )
+  @PostMapping(value = "/refresh", produces = "application/json")
+  public ApiResponse<AuthResponseDto.TokenResponse> refreshAccessToken(
+      @Valid @RequestBody AuthRequestDto.RefreshTokenRequest request,
+      @CurrentUser @Parameter(hidden = true)User loginUser) {
+    AuthResponseDto.TokenResponse response = authService.refreshAccessToken(loginUser, request.getRefreshToken());
+    return ApiResponse.of(AuthSuccessStatus.AT_REFRESH_SUCCESS, response);
+  }
+
+  @Operation(
+      summary = "로그아웃",
+      description = "현재 로그인한 사용자의 리프레시 토큰을 삭제하고 로그아웃 처리합니다."
+  )
+  @PostMapping(value = "/logout", produces = "application/json")
+  public ApiResponse<Void> logout(
+      @Valid @RequestBody AuthRequestDto.RefreshTokenRequest request,
+      @CurrentUser @Parameter(hidden = true) User loginUser ) {
+    authService.logout(loginUser, request.getRefreshToken());
+    return ApiResponse.of(AuthSuccessStatus.LOGOUT_SUCCESS, null);
+  }
+
 
 
 

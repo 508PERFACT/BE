@@ -35,7 +35,7 @@ public class DevAuthService {
         .build();
 
     userRepository.save(fakeUser);
-    return jwtProvider.generateToken(fakeUser.getId(), fakeUser.getSocialId());
+    return jwtProvider.generateAccessToken(fakeUser.getId(), fakeUser.getSocialId());
   }
 }
 

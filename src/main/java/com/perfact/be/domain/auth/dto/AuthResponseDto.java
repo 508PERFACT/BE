@@ -18,7 +18,18 @@ public class AuthResponseDto {
     private String email;
 
     @Schema(description = "JWT 액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6...")
-    private String token;
+    private String accessToken;
+
+    @Schema(description = "JWT 리프레시 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6...")
+    private String refreshToken;
+  }
+
+  @Getter
+  @AllArgsConstructor
+  @Schema(description = "엑세스 토큰 재생성 응답 DTO")
+  public static class TokenResponse {
+    @Schema(description = "새로 발급된 JWT 액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6...")
+    private String accessToken;
   }
 
 }

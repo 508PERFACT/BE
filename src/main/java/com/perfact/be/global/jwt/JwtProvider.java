@@ -26,7 +26,9 @@ public class JwtProvider {
   private String secretKey;
 
   @Value("${jwt.expiration}")
-  private long expirationMillis;
+  private long accessTokenExpirationMillis;
+
+  private final long refreshTokenExpirationMillis = 3 * 60 * 60 * 1000L;
 
   private Key key;
 
@@ -37,9 +39,9 @@ public class JwtProvider {
     this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
   }
 
-  public String generateToken(Long userId, String socialId) {
+  public String generateAccessToken(Long userId, String socialId) {
     Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + expirationMillis);
+    Date expiryDate = new Date(now.getTime() + accessTokenExpirationMillis);
 
     return Jwts.builder()
         .setSubject(userId.toString())
@@ -51,24 +53,37 @@ public class JwtProvider {
         .compact();
   }
 
-  public Long getUserIdFromToken(String token) {
-    return Long.parseLong(parseClaims(token).getSubject());
+  public String generateRefreshToken(Long userId, String socialId, String uuid) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMillis);
+
+    return Jwts.builder()
+        .setSubject(userId.toString())
+        .claim("socialId", socialId)
+        .claim("uuid", uuid)
+        .claim("type", "REFRESH")
+        .setIssuedAt(now)
+        .setExpiration(expiryDate)
+        .signWith(key, SignatureAlgorithm.HS256)
+        .compact();
   }
 
-  public String getSocialIdFromToken(String token) {
-    return parseClaims(token).get("socialId", String.class);
+  public void validateAccessToken(String token) {
+    validateTokenWithType(token, "ACCESS");
   }
 
-  public void validateToken(String token) {
+  public void validateRefreshToken(String token) {
+    validateTokenWithType(token, "REFRESH");
+  }
+
+  private void validateTokenWithType(String token, String expectedType) {
     try {
       Claims claims = parseClaims(token);
       String type = claims.get("type", String.class);
-      if (!"ACCESS".equals(type)) {
-        throw new BadCredentialsException("유효하지 않은 토큰 타입입니다.");
+      if (!expectedType.equals(type)) {
+        throw new BadCredentialsException("유효하지 않은 토큰 타입입니다: " + type);
       }
-    } catch (SecurityException | MalformedJwtException |
-             ExpiredJwtException | UnsupportedJwtException |
-             IllegalArgumentException e) {
+    } catch (JwtException | IllegalArgumentException e) {
       log.warn("JWT 인증 실패: {}", e.getMessage());
       throw new BadCredentialsException("유효하지 않은 JWT", e);
     }
@@ -80,6 +95,19 @@ public class JwtProvider {
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 
+  public Long getUserIdFromToken(String token) {
+    return Long.parseLong(parseClaims(token).getSubject());
+  }
+
+  public String getSocialIdFromToken(String token) {
+    return parseClaims(token).get("socialId", String.class);
+  }
+
+
+  public String getUuidFromToken(String token) {
+    return parseClaims(token).get("uuid", String.class);
+  }
+
   private Claims parseClaims(String token) {
     return Jwts.parserBuilder()
         .setSigningKey(key)
@@ -88,4 +116,3 @@ public class JwtProvider {
         .getBody();
   }
 }
-
