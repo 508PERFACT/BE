@@ -1,7 +1,8 @@
 package com.perfact.be.domain.news.service;
 
+import com.perfact.be.domain.news.config.SelectorConfig;
+import com.perfact.be.domain.news.exception.NewsHandler;
 import com.perfact.be.domain.news.exception.status.NewsErrorStatus;
-import com.perfact.be.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class NewsExtractorServiceImpl implements NewsExtractorService {
 
   private final HtmlParserService htmlParserService;
-  private final com.perfact.be.domain.news.config.SelectorConfig selectorConfig;
+  private final SelectorConfig selectorConfig;
 
   // 뉴스 기사 내용 추출
   @Override
@@ -35,7 +36,7 @@ public class NewsExtractorServiceImpl implements NewsExtractorService {
       return content.toString();
 
     } catch (Exception e) {
-      throw new GeneralException(NewsErrorStatus.NEWS_CONTENT_NOT_FOUND);
+      throw new NewsHandler(NewsErrorStatus.NEWS_CONTENT_NOT_FOUND);
     }
   }
 

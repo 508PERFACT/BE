@@ -51,6 +51,9 @@ public class PromptService {
           - **광고 목적**: Directly encourages purchase with phrases like "purchase link", "inquiry", "first-come, first-served".
           - **과장 표현 다수**: Repeated use of extreme/definitive language like "miraculous", "100%", "guaranteed success for anyone".
 
+      ### Step 5: Generate Detailed Chatbot Priming Text
+      - **chatbot_context**: Generate a **detailed and clean plain text** priming text for a follow-up Q&A chatbot. **This text MUST NOT contain markdown characters like '#' or '*'**. Use simple line breaks and text labels (e.g., `[섹션 제목]`) for structure. For each of the 5 reliability criteria, you MUST state the assigned score and the full `reason` in the format `'항목명 (점수): 이유'`. Also, list the granted badges and their reasons.
+
       # Final JSON Output Structure
       Your final output MUST follow this structure precisely:
       {
@@ -90,7 +93,8 @@ public class PromptService {
           }
         ],
         "total_score": integer,
-        "ai_badges": [ "A mandatory array of 1-2 strings representing the most characteristic badges." ]
+        "ai_badges": [ "A mandatory array of 1-2 strings representing the most characteristic badges." ],
+        "chatbot_context": "A detailed and structured plain text summary of the analysis results, designed to be used as the initial context for a separate Q&A chatbot. It must not contain markdown characters."
       }
       """;
 
@@ -104,43 +108,44 @@ public class PromptService {
         "topic": "전남 무안과 함평 지역에 내린 극한호우로 인한 침수 피해 및 주민 대피 상황",
         "source": "연합뉴스",
         "summary": [
-          "2025년 8월 3일, 짧은 시간에 내린 폭우로 인해 전남 무안군과 함평군 일대에 침수가 발생하여 주민 대피령이 내려졌습니다.",
-          "무안군은 신촌저수지 월류 위험 및 무안읍소재지 침수를 알리며 주민과 차량의 신속한 대피를 요청했습니다.",
-          "함평군 역시 함평읍내 침수 상황을 알리며 안전한 곳으로의 즉시 대피를 안내했고, 무안공항에는 시간당 142.1mm의 많은 비가 기록되었습니다.",
-          "전라남도는 침수 피해 최소화를 위해 현황을 파악하며 상황을 예의주시하고 있다고 밝혔습니다."
+            "2025년 8월 3일, 짧은 시간에 내린 폭우로 인해 전남 무안군과 함평군 일대에 침수가 발생하여 주민 대피령이 내려졌습니다.",
+            "무안군은 신촌저수지 월류 위험 및 무안읍소재지 침수를 알리며 주민과 차량의 신속한 대피를 요청했습니다.",
+            "함평군 역시 함평읍내 침수 상황을 알리며 안전한 곳으로의 즉시 대피를 안내했고, 무안공항에는 시간당 142.1mm의 많은 비가 기록되었습니다.",
+            "전라남도는 침수 피해 최소화를 위해 현황을 파악하며 상황을 예의주시하고 있다고 밝혔습니다."
         ],
         "reliability_analysis": [
-          {
-            "category_name": "출처 신뢰성",
-            "score": 95,
-            "reason": "대한민국 주요 통신사인 '연합뉴스'의 보도이며, 기사 말미에 기자 이메일이 명시되어 있습니다."
-          },
-          {
-            "category_name": "사실 근거",
-            "score": 100,
-            "reason": "재난 문자 발송 시각, 지역별 강수량(mm) 등 검증 가능한 수치를 제시하고 지자체 관계자를 인용했습니다."
-          },
-          {
-            "category_name": "광고/과장 표현",
-            "score": 100,
-            "reason": "상업적 목적이나 감정을 자극하는 과장된 표현 없이 발생한 사건을 객관적으로 보도하고 있습니다."
-          },
-          {
-            "category_name": "편향성",
-            "score": 90,
-            "reason": "특정 입장에 치우치지 않고, 재난 상황과 관련 당국의 대응을 사실적으로 전달하는 데 집중합니다."
-          },
-          {
-            "category_name": "기사 형식",
-            "score": 95,
-            "reason": "제목과 본문이 명확하게 일치하며, 기사의 내용이 사실 중심으로 간결하게 구성되어 있습니다."
-          }
+            {
+                "category_name": "출처 신뢰성",
+                "score": 95,
+                "reason": "대한민국 주요 통신사인 '연합뉴스'의 보도이며, 기사 말미에 기자 이메일이 명시되어 있습니다."
+            },
+            {
+                "category_name": "사실 근거",
+                "score": 100,
+                "reason": "재난 문자 발송 시각, 지역별 강수량(mm) 등 검증 가능한 수치를 제시하고 지자체 관계자를 인용했습니다."
+            },
+            {
+                "category_name": "광고/과장 표현",
+                "score": 100,
+                "reason": "상업적 목적이나 감정을 자극하는 과장된 표현 없이 발생한 사건을 객관적으로 보도하고 있습니다."
+            },
+            {
+                "category_name": "편향성",
+                "score": 90,
+                "reason": "특정 입장에 치우치지 않고, 재난 상황과 관련 당국의 대응을 사실적으로 전달하는 데 집중합니다."
+            },
+            {
+                "category_name": "기사 형식",
+                "score": 95,
+                "reason": "제목과 본문이 명확하게 일치하며, 기사의 내용이 사실 중심으로 간결하게 구성되어 있습니다."
+            }
         ],
         "total_score": 96,
         "ai_badges": [
-          "공신력 있는 출처",
-          "주의 환기 우수"
-        ]
+            "공신력 있는 출처",
+            "주의 환기 우수"
+        ],
+        "chatbot_context": "[기사 분석 리포트 요약]\n이 기사는 '연합뉴스'에서 보도했으며, 총점 96점(매우 높음)으로 평가된 신뢰도 높은 기사입니다.\n\n[세부 평가 근거]\n출처 신뢰성 (95점): 대한민국 주요 통신사인 '연합뉴스'의 보도이며, 기사 말미에 기자 이메일이 명시되어 신뢰도가 높습니다.\n사실 근거 (100점): 재난 문자 발송 시각, 지역별 강수량(mm) 등 검증 가능한 수치를 제시하고 지자체 관계자를 인용하여 만점을 받았습니다.\n광고/과장 표현 (100점): 상업적 목적이나 감정을 자극하는 과장된 표현 없이 발생한 사건을 객관적으로 보도하고 있습니다.\n편향성 (90점): 특정 입장에 치우치지 않고, 재난 상황과 관련 당국의 대응을 사실적으로 전달하는 데 집중합니다.\n기사 형식 (95점): 제목과 본문이 명확하게 일치하며, 기사의 내용이 사실 중심으로 간결하게 구성되어 있습니다.\n\n[부여된 AI 배지]\n공신력 있는 출처: 주요 언론사인 연합뉴스에서 보도하여 부여되었습니다.\n주의 환기 우수: 재난 상황의 위험성을 구체적인 근거를 들어 알리고 있어 부여되었습니다.\n\n이 내용을 기반으로 사용자의 질문에 상세히 답변하세요."
       }
       """;
 
@@ -189,20 +194,17 @@ public class PromptService {
         "total_score": 85,
         "ai_badges": [
           "광고성 기사"
-        ]
+        ],
+        "chatbot_context": "[기사 분석 리포트 요약]\n이 기사는 기자명('고윤상')은 명시되었으나 출처가 불분명하며, 총점 85점(높음)으로 평가되었습니다.\n\n[세부 평가 근거]\n출처 신뢰성 (65점): 기자 이름('고윤상')이 명시되어 있으나, 기사를 보도한 구체적인 언론사 이름이 확인되지 않아 보통 수준의 점수를 받았습니다.\n사실 근거 (95점): 프로모션 기간, 가격, 대상 브랜드 등 구체적이고 확인 가능한 사실 정보를 중심으로 내용을 구성하여 높은 점수를 받았습니다.\n광고/과장 표현 (90점): 기업의 할인 행사를 객관적으로 보도하고 있으며, 구매를 직접 유도하는 과장된 광고성 표현은 없습니다.\n편향성 (80점): 단순 행사 정보를 넘어, 기업의 전략적 배경과 의도(이미지 회복 등)를 함께 설명하며 다각적인 분석을 제공합니다.\n기사 형식 (95점): 제목이 기사의 핵심 내용을 잘 요약하고 있으며, 문단 구분이 명확하여 가독성이 높습니다.\n\n[부여된 AI 배지]\n광고성 기사: 기사의 핵심 주제가 특정 기업의 상품 할인 프로모션에 관한 것이므로 부여되었습니다.\n\n이 내용을 기반으로 사용자의 질문에 상세히 답변하세요."
       }
       """;
 
-  /**
-   * 시스템 프롬프트를 반환합니다.
-   */
+  // 시스템 프롬프트 반환
   public String getSystemPrompt() {
     return SYSTEM_PROMPT;
   }
 
-  /**
-   * 예시 대화들을 반환합니다.
-   */
+  // 예시 대화들 반환
   public List<ClovaRequestDTO.Message> getExampleConversations() {
     List<ClovaRequestDTO.Message> messages = new ArrayList<>();
 

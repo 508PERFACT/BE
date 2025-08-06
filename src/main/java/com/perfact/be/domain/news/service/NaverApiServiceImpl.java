@@ -1,7 +1,7 @@
 package com.perfact.be.domain.news.service;
 
+import com.perfact.be.domain.news.exception.NewsHandler;
 import com.perfact.be.domain.news.exception.status.NewsErrorStatus;
-import com.perfact.be.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -46,11 +46,11 @@ public class NaverApiServiceImpl implements NaverApiService {
       if (response.getStatusCode() == HttpStatus.OK) {
         return response.getBody();
       } else {
-        throw new GeneralException(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
+        throw new NewsHandler(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
       }
 
     } catch (Exception e) {
-      throw new GeneralException(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
+      throw new NewsHandler(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
     }
   }
 

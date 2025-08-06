@@ -1,7 +1,6 @@
 package com.perfact.be.domain.news.exception;
 
 import com.perfact.be.domain.news.exception.status.NewsErrorStatus;
-import com.perfact.be.global.exception.GeneralException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -9,52 +8,40 @@ import org.springframework.stereotype.Component;
 @Component
 public class NewsExceptionHandler {
 
-  /**
-   * 뉴스 파싱 실패 시 예외를 처리합니다.
-   */
+  // 뉴스 파싱 실패 예외 처리
   public void handleParsingFailure(String url, String operation, Exception e) {
     log.error("Failed to {} for URL: {}", operation, url, e);
-    throw new GeneralException(NewsErrorStatus.NEWS_ARTICLE_PARSING_FAILED);
+    throw new NewsHandler(NewsErrorStatus.NEWS_ARTICLE_PARSING_FAILED);
   }
 
-  /**
-   * 뉴스 내용을 찾을 수 없을 때 예외를 처리합니다.
-   */
+  // 뉴스 내용 찾을 수 없을 때 예외 처리
   public void handleContentNotFound(String url, String operation) {
     log.warn("Content not found during {} for URL: {}", operation, url);
-    throw new GeneralException(NewsErrorStatus.NEWS_CONTENT_NOT_FOUND);
+    throw new NewsHandler(NewsErrorStatus.NEWS_CONTENT_NOT_FOUND);
   }
 
-  /**
-   * 뉴스 제목 추출 실패 시 예외를 처리합니다.
-   */
+  // 뉴스 제목 추출 실패 예외 처리
   public void handleTitleExtractionFailure(String url, String operation, Exception e) {
     log.error("Failed to extract title during {} for URL: {}", operation, url, e);
-    throw new GeneralException(NewsErrorStatus.NEWS_TITLE_EXTRACTION_FAILED);
+    throw new NewsHandler(NewsErrorStatus.NEWS_TITLE_EXTRACTION_FAILED);
   }
 
-  /**
-   * 네이버 API 호출 실패 시 예외를 처리합니다.
-   */
+  // 네이버 API 호출 실패 예외 처리
   public void handleNaverApiFailure(String query, Exception e) {
     log.error("Failed to call Naver API for query: {}", query, e);
-    throw new GeneralException(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
+    throw new NewsHandler(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
   }
 
-  /**
-   * 안전한 텍스트 추출을 수행합니다. 실패 시 null을 반환합니다.
-   */
+  // 안전한 텍스트 추출 수행 실패 시 null 반환
   public String safeExtractText(String url, String operation, TextExtractor extractor) {
     try {
       return extractor.extract();
     } catch (Exception e) {
+      log.warn("Text extraction failed during {} for URL: {}", operation, url, e);
       return null;
     }
   }
 
-  /**
-   * 텍스트 추출을 위한 함수형 인터페이스
-   */
   @FunctionalInterface
   public interface TextExtractor {
     String extract() throws Exception;

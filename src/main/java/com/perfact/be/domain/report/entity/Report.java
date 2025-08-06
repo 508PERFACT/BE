@@ -1,18 +1,24 @@
 package com.perfact.be.domain.report.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.perfact.be.domain.user.entity.User;
 import com.perfact.be.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "reports")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Report extends BaseEntity {
 
@@ -21,6 +27,7 @@ public class Report extends BaseEntity {
   @Column(name = "report_id")
   private Long reportId;
 
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
@@ -43,15 +50,10 @@ public class Report extends BaseEntity {
   @Column(name = "summary", columnDefinition = "TEXT")
   private String summary;
 
-  @Builder
-  public Report(User user, String title, String category, String url,
-      String publisher, LocalDate publicationDate, String summary) {
+  @Column(name = "chatbot_context", columnDefinition = "TEXT")
+  private String chatbotContext;
+
+  public void setUser(User user) {
     this.user = user;
-    this.title = title;
-    this.category = category;
-    this.url = url;
-    this.publisher = publisher;
-    this.publicationDate = publicationDate;
-    this.summary = summary;
   }
 }

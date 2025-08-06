@@ -1,7 +1,7 @@
 package com.perfact.be.domain.news.service;
 
+import com.perfact.be.domain.news.exception.NewsHandler;
 import com.perfact.be.domain.news.exception.status.NewsErrorStatus;
-import com.perfact.be.global.exception.GeneralException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,7 +25,7 @@ public class HtmlParserServiceImpl implements HtmlParserService {
       return doc;
 
     } catch (IOException e) {
-      throw new GeneralException(NewsErrorStatus.NEWS_ARTICLE_PARSING_FAILED);
+      throw new NewsHandler(NewsErrorStatus.NEWS_ARTICLE_PARSING_FAILED);
     }
   }
 
@@ -42,7 +42,7 @@ public class HtmlParserServiceImpl implements HtmlParserService {
       return element;
 
     } catch (Exception e) {
-      throw new GeneralException(NewsErrorStatus.NEWS_ARTICLE_PARSING_FAILED);
+      throw new NewsHandler(NewsErrorStatus.NEWS_ARTICLE_PARSING_FAILED);
     }
   }
 
