@@ -10,6 +10,7 @@ import com.perfact.be.global.resolver.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,7 +54,7 @@ public class AuthController {
   )
   @PostMapping(value = "/refresh", produces = "application/json")
   public ApiResponse<AuthResponseDto.TokenResponse> refreshAccessToken(
-      @RequestBody AuthRequestDto.RefreshTokenRequest request,
+      @Valid @RequestBody AuthRequestDto.RefreshTokenRequest request,
       @CurrentUser @Parameter(hidden = true)User loginUser) {
     AuthResponseDto.TokenResponse response = authService.refreshAccessToken(loginUser, request.getRefreshToken());
     return ApiResponse.of(AuthSuccessStatus.AT_REFRESH_SUCCESS, response);
@@ -65,7 +66,7 @@ public class AuthController {
   )
   @PostMapping(value = "/logout", produces = "application/json")
   public ApiResponse<Void> logout(
-      @RequestBody AuthRequestDto.RefreshTokenRequest request,
+      @Valid @RequestBody AuthRequestDto.RefreshTokenRequest request,
       @CurrentUser @Parameter(hidden = true) User loginUser ) {
     authService.logout(loginUser, request.getRefreshToken());
     return ApiResponse.of(AuthSuccessStatus.LOGOUT_SUCCESS, null);

@@ -2,9 +2,7 @@ package com.perfact.be.domain.auth.controller;
 
 import com.perfact.be.domain.auth.exception.status.AuthSuccessStatus;
 import com.perfact.be.domain.auth.service.DevAuthService;
-import com.perfact.be.domain.user.exception.status.UserSuccessStatus;
 import com.perfact.be.global.apiPayload.ApiResponse;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
