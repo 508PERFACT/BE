@@ -47,30 +47,22 @@ public class SelectorConfig {
       ".article-time" // 기사 시간 클래스
   );
 
-  /**
-   * 제목 셀렉터 배열을 반환합니다.
-   */
+  // 제목 셀렉터 배열 밴환
   public String[] getTitleSelectors() {
     return TITLE_SELECTORS.toArray(new String[0]);
   }
 
-  /**
-   * 다른 뉴스 사이트 제목 셀렉터 배열을 반환합니다.
-   */
+  // 다른 뉴스 사이트 제목 셀렉터 배열 반환
   public String[] getOtherNewsTitleSelectors() {
     return OTHER_NEWS_TITLE_SELECTORS.toArray(new String[0]);
   }
 
-  /**
-   * 내용 셀렉터 배열을 반환합니다.
-   */
+  // 내용 셀렉터 배열 반환
   public String[] getContentSelectors() {
     return CONTENT_SELECTORS.toArray(new String[0]);
   }
 
-  /**
-   * 날짜 셀렉터 배열을 반환합니다.
-   */
+  // 날짜 셀렉터 배열 반환
   public String[] getDateSelectors() {
     return DATE_SELECTORS.toArray(new String[0]);
   }

@@ -1,5 +1,6 @@
 package com.perfact.be.domain.news.service;
 
+import com.perfact.be.domain.news.config.SelectorConfig;
 import com.perfact.be.domain.news.dto.NewsArticleResponse;
 import com.perfact.be.domain.news.exception.NewsExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ public class NewsServiceImpl implements NewsService {
   private final NewsExtractorService newsExtractorService;
   private final DateExtractorService dateExtractorService;
   private final NewsExceptionHandler exceptionHandler;
-  private final com.perfact.be.domain.news.config.SelectorConfig selectorConfig;
+  private final SelectorConfig selectorConfig;
 
   @Override
   public org.jsoup.nodes.Document getHtmlFromUrl(String url) {
