@@ -45,5 +45,4 @@ public class User extends BaseEntity {
   @Column(columnDefinition = "bigint default 3")
   private Long credit = 3L;
 
-
 }
