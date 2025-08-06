@@ -1,57 +1,48 @@
 package com.perfact.be.domain.user.entity;
 
+import com.perfact.be.domain.user.entity.enums.Role;
+import com.perfact.be.domain.user.entity.enums.SocialType;
+import com.perfact.be.domain.user.entity.enums.UserStatus;
 import com.perfact.be.global.common.BaseEntity;
+import lombok.*;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  private Long userId;
-
+  private Long id;
   @Column(name = "social_id", length = 255)
   private String socialId;
-
-  @Column(name = "social_type", length = 50)
-  private String socialType;
-
-  @Column(name = "name", length = 10)
-  private String name;
-
-  @Column(name = "birth")
-  private Integer birth;
-
+  @Enumerated(EnumType.STRING)
+  private SocialType socialType;
+  @Column(name = "nickname", length = 10)
+  private String nickname;
   @Column(name = "email", length = 255)
   private String email;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private Role role;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = false)
+  private UserStatus status = UserStatus.ACTIVE;
 
-  @Column(name = "is_subscribe", length = 255)
-  private String isSubscribe;
 
-  @Column(name = "is_notification_agreed")
-  private Boolean isNotificationAgreed;
 
-  @Column(name = "credit")
-  private Long credit;
+  @Column(name = "is_subscribe", columnDefinition = "boolean default false")
+  private Boolean isSubscribe = false;
 
-  @Builder
-  public User(String socialId, String socialType, String name, Integer birth,
-      String email, String isSubscribe, Boolean isNotificationAgreed, Long credit) {
-    this.socialId = socialId;
-    this.socialType = socialType;
-    this.name = name;
-    this.birth = birth;
-    this.email = email;
-    this.isSubscribe = isSubscribe;
-    this.isNotificationAgreed = isNotificationAgreed;
-    this.credit = credit;
-  }
+  @Column(columnDefinition = "boolean default false")
+  private Boolean isNotificationAgreed = false;
+
+  @Column(columnDefinition = "bigint default 3")
+  private Long credit = 3L;
+
 }
