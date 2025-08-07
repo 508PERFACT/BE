@@ -5,22 +5,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.perfact.be.domain.news.dto.NewsArticleResponse;
 import com.perfact.be.domain.news.service.NewsService;
 import com.perfact.be.domain.report.converter.ClovaAnalysisConverter;
-import com.perfact.be.domain.report.dto.ClovaRequestDTO;
-import com.perfact.be.domain.report.dto.ClovaResponseDTO;
-import com.perfact.be.domain.report.entity.Badge;
-import com.perfact.be.domain.report.entity.Report;
-import com.perfact.be.domain.report.entity.ReportBadge;
-import com.perfact.be.domain.report.entity.TrueScore;
-import com.perfact.be.domain.report.repository.BadgeRepository;
-import com.perfact.be.domain.report.repository.ReportBadgeRepository;
-import com.perfact.be.domain.report.repository.ReportRepository;
-import com.perfact.be.domain.report.repository.TrueScoreRepository;
+import com.perfact.be.domain.report.converter.ReportConverter;
+import com.perfact.be.domain.report.dto.*;
+import com.perfact.be.domain.report.entity.*;
+import com.perfact.be.domain.report.repository.*;
 import com.perfact.be.domain.report.exception.ReportHandler;
 import com.perfact.be.domain.report.exception.status.ReportErrorStatus;
 import com.perfact.be.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -47,6 +45,8 @@ public class ReportServiceImpl implements ReportService {
   private final RestTemplate restTemplate;
   private final ObjectMapper objectMapper;
   private final PromptService promptService;
+
+  private final ReportConverter reportConverter;
 
   @Value("${api.clova.api-url}")
   private String CLOVA_API_URL;
@@ -164,6 +164,19 @@ public class ReportServiceImpl implements ReportService {
       throw new ReportHandler(ReportErrorStatus.REPORT_CREATION_FAILED);
     }
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public ReportResponseDto.ReportListDto getSavedReports(User loginUser, int page) {
+    if (page < 1) {
+      throw new ReportHandler(ReportErrorStatus.INVALID_PAGE_NUMBER);
+    }
+
+    Pageable pageable = PageRequest.of(page - 1, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
+    Page<Report> reportsPage = reportRepository.findByUserOrderByCreatedAtDesc(loginUser, pageable);
+    return reportConverter.toListDto(reportsPage);
+  }
+
 
   private Object analyzeNaverNews(String url) {
     try {

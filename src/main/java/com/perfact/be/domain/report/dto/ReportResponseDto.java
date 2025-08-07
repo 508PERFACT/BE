@@ -136,4 +136,45 @@ public class ReportResponseDto {
           .build();
     }
   }
+
+  @Getter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Schema(description = "레포트 리스트 응답 DTO")
+  public static class ReportListDto {
+
+    @Schema(description = "레포트 목록")
+    private List<ReportDto> reports;
+
+    @Schema(description = "현재 페이지 번호 (1부터 시작)", example = "1")
+    private int currentPage;
+
+    @Schema(description = "전체 페이지 수", example = "5")
+    private int totalPages;
+
+    @Schema(description = "전체 레포트 수", example = "27")
+    private long totalElements;
+
+    @Schema(description = "현재 페이지가 마지막 페이지 여부", example = "false")
+    private boolean isLast;
+  }
+
+
+  @Getter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Schema(description = "리포트 응답 DTO")
+  public static class ReportDto {
+
+    @Schema(description = "리포트 ID", example = "1")
+    private Long reportId;
+
+    @Schema(description = "뉴스 제목", example = "뉴스 제목입니다")
+    private String title;
+
+    @Schema(description = "생성일시")
+    private LocalDateTime createdAt;
+  }
 }

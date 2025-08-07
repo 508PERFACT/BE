@@ -2,6 +2,7 @@ package com.perfact.be.domain.report.converter;
 
 import com.perfact.be.domain.news.dto.NewsArticleResponse;
 import com.perfact.be.domain.report.dto.ClovaResponseDTO;
+import com.perfact.be.domain.report.dto.ReportResponseDto;
 import com.perfact.be.domain.report.entity.Report;
 import com.perfact.be.domain.report.exception.ReportHandler;
 import com.perfact.be.domain.report.exception.status.ReportErrorStatus;
@@ -9,8 +10,10 @@ import com.perfact.be.domain.report.util.ClovaResponseParser;
 import com.perfact.be.domain.report.util.DateParser;
 import com.perfact.be.domain.report.util.UrlParser;
 import com.perfact.be.domain.user.entity.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -45,4 +48,29 @@ public class ReportConverter {
       throw new ReportHandler(ReportErrorStatus.REPORT_CONVERSION_FAILED);
     }
   }
+
+  public ReportResponseDto.ReportDto toDto(Report report) {
+    return ReportResponseDto.ReportDto.builder()
+        .reportId(report.getReportId())
+        .title(report.getTitle())
+        .createdAt(report.getCreatedAt())
+        .build();
+  }
+
+  public List<ReportResponseDto.ReportDto> toDtoList(List<Report> reports) {
+    return reports.stream()
+        .map(this::toDto)
+        .toList();
+  }
+
+  public ReportResponseDto.ReportListDto toListDto(Page<Report> reportsPage) {
+    return ReportResponseDto.ReportListDto.builder()
+        .reports(toDtoList(reportsPage.getContent()))
+        .currentPage(reportsPage.getNumber() + 1)
+        .totalPages(reportsPage.getTotalPages())
+        .totalElements(reportsPage.getTotalElements())
+        .isLast(reportsPage.isLast())
+        .build();
+  }
+
 }
