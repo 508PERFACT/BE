@@ -7,6 +7,7 @@ import com.perfact.be.domain.news.service.NewsService;
 import com.perfact.be.domain.report.converter.ClovaAnalysisConverter;
 import com.perfact.be.domain.report.converter.ReportConverter;
 import com.perfact.be.domain.report.dto.*;
+import com.perfact.be.domain.report.dto.ReportResponseDto.ReportDto;
 import com.perfact.be.domain.report.entity.*;
 import com.perfact.be.domain.report.repository.*;
 import com.perfact.be.domain.report.exception.ReportHandler;
@@ -175,6 +176,23 @@ public class ReportServiceImpl implements ReportService {
     Pageable pageable = PageRequest.of(page - 1, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
     Page<Report> reportsPage = reportRepository.findByUserOrderByCreatedAtDesc(loginUser, pageable);
     return reportConverter.toListDto(reportsPage);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public ReportResponseDto getReport(User loginUser, Long reportId) {
+    Report report = reportRepository.findById(reportId)
+        .orElseThrow(() -> new ReportHandler(ReportErrorStatus.REPORT_NOT_FOUND));
+
+    if (!report.getUser().getId().equals(loginUser.getId())) {
+      throw new ReportHandler(ReportErrorStatus.FORBIDDEN_REPORT_ACCESS);
+    }
+
+    TrueScore trueScore = trueScoreRepository.findByReportId(reportId)
+        .orElse(null);
+    List<ReportBadge> reportBadges = reportBadgeRepository.findByReportId(reportId);
+
+    return ReportResponseDto.from(report, trueScore, reportBadges);
   }
 
 

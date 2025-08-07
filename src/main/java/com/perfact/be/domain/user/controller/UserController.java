@@ -35,7 +35,7 @@ public class UserController {
           @Parameter(name = "page", description = "페이지 번호 (1부터 시작)", example = "1"),
       }
   )
-  @GetMapping("/{reportId}")
+  @GetMapping("")
   public ApiResponse<ReportResponseDto.ReportListDto> getReportList(
       @Parameter(hidden = true) @CurrentUser User loginUser,
       @RequestParam(name = "page", defaultValue = "1") int page
@@ -43,6 +43,28 @@ public class UserController {
     ReportResponseDto.ReportListDto response = reportService.getSavedReports(loginUser, page);
     return ApiResponse.of(UserSuccessStatus.GET_REPORT_LIST_SUCCESS, response);
   }
+
+
+  @Operation(
+      summary = "레포트 저장함에서 과거 레포트 조회",
+      description = "현재 로그인한 사용자가 생성한 특정 리포트(reportId)를 조회합니다.",
+      parameters = {
+          @Parameter(name = "reportId", description = "조회할 리포트 ID", example = "1")
+      }
+  )
+  @GetMapping("/{reportId}")
+  public ApiResponse<ReportResponseDto> getMyReport(
+      @Parameter(hidden = true) @CurrentUser User loginUser,
+      @PathVariable Long reportId
+  ) {
+    ReportResponseDto response = reportService.getReport(loginUser, reportId);
+    return ApiResponse.of(UserSuccessStatus.GET_REPORT_SUCCESS, response);
+  }
+
+
+
+
+  // TODO 해야됨
 
   @Operation(summary = "구독 상태 확인", description = "현재 사용자의 구독 상태를 확인합니다.")
   @GetMapping("/subscribe")

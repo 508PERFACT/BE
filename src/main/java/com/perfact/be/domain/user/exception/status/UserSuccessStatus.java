@@ -14,8 +14,8 @@ public enum UserSuccessStatus implements BaseCode {
   GET_SUBSCRIBE_STATUS_SUCCESS(HttpStatus.OK, "USER2002", "구독 상태 조회 성공"),
   SUBSCRIBE_SUCCESS(HttpStatus.OK, "USER2003", "구독 신청 성공"),
   UNSUBSCRIBE_SUCCESS(HttpStatus.OK, "USER2004", "구독 해지 성공"),
-  GET_REPORT_LIST_SUCCESS(HttpStatus.OK, "USER2005","과거 레포트 리스트 조회 성공")
-
+  GET_REPORT_LIST_SUCCESS(HttpStatus.OK, "USER2005","과거 레포트 리스트 조회 성공"),
+  GET_REPORT_SUCCESS(HttpStatus.OK, "USER2006","단일 리포트 조회 성공")
   ;
 
   private final HttpStatus httpStatus;

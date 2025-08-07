@@ -14,8 +14,8 @@ public enum ReportErrorStatus implements BaseErrorCode {
   ANALYSIS_RESULT_PARSING_FAILED(HttpStatus.BAD_REQUEST, "REPORT4003", "분석 결과 파싱에 실패했습니다."),
   REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT4004", "리포트를 찾을 수 없습니다."),
   REPORT_CONVERSION_FAILED(HttpStatus.BAD_REQUEST, "REPORT4005", "리포트 변환에 실패했습니다."),
-  INVALID_PAGE_NUMBER(HttpStatus.NOT_FOUND, "REPORT4006","페이지 번호가 유효하지 않습니다.")
-  ;
+  INVALID_PAGE_NUMBER(HttpStatus.NOT_FOUND, "REPORT4006","페이지 번호가 유효하지 않습니다."),
+  FORBIDDEN_REPORT_ACCESS(HttpStatus.FORBIDDEN,"REPORT4007","해당 레포트에 접근 권한이 없습니다." );
 
   private final HttpStatus httpStatus;
   private final String code;
