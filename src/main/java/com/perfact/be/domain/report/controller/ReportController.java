@@ -9,6 +9,7 @@ import com.perfact.be.domain.report.repository.ReportBadgeRepository;
 import com.perfact.be.domain.report.repository.TrueScoreRepository;
 import com.perfact.be.domain.report.service.ReportService;
 import com.perfact.be.domain.user.entity.User;
+import com.perfact.be.global.aop.CreditCheck;
 import com.perfact.be.global.apiPayload.ApiResponse;
 import com.perfact.be.global.resolver.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,7 @@ public class ReportController {
 
   @Operation(summary = "뉴스 기사 AI 분석 및 리포트 생성", description = "뉴스 URL을 입력받아 Clova API를 통해 AI 분석을 수행하고 리포트를 생성하여 저장합니다.")
   @PostMapping("")
+  @CreditCheck(cost=1)
   public ApiResponse<ReportResponseDto> analyzeNewsAndCreateReport(
       @Parameter(description = "분석할 뉴스 URL", required = true, example = "https://news.naver.com/main/read.naver?mode=LSD&mid=shm&sid1=100&oid=001&aid=0012345678") @RequestBody AnalyzeNewsRequestDTO request,
       @CurrentUser @Parameter(hidden = true) User loginUser) {

@@ -1,4 +1,4 @@
-package com.perfact.be.domain.user.exception.status;
+package com.perfact.be.domain.credit.exception.status;
 
 import com.perfact.be.global.apiPayload.code.BaseErrorCode;
 import com.perfact.be.global.apiPayload.code.ErrorReasonDto;
@@ -8,15 +8,11 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum UserErrorStatus implements BaseErrorCode {
-  USER_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER_4001", "유저 생성에 실패했습니다"),
-  USER_INFO_REQUIRED(HttpStatus.INTERNAL_SERVER_ERROR, "USER_4002", "유저 파라미터가 필요합니다."),
-  USER_LOOKUP_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"USER_4003", "유저 조회 중 오류가 발생했습니다."),
-  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_4004", "유저를 찾을 수 없습니다"),
-  PLAN_NOT_FOUND(HttpStatus.NOT_FOUND,"USER_4005", "해당 사용자의 구독정보를 찾을 수 없습니다." )
+public enum CreditErrorStatus implements BaseErrorCode {
+  CREDIT_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "CREDIT4001", "크레딧이 부족합니다."),
+
 
   ;
-
 
   private final HttpStatus httpStatus;
   private final String code;
