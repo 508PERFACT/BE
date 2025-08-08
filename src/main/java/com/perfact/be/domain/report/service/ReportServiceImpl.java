@@ -195,7 +195,6 @@ public class ReportServiceImpl implements ReportService {
     return ReportResponseDto.from(report, trueScore, reportBadges);
   }
 
-
   private Object analyzeNaverNews(String url) {
     try {
       NewsArticleResponse newsData = newsService.extractNaverNewsArticle(url);

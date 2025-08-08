@@ -38,6 +38,9 @@ public class Report extends BaseEntity {
   @Column(name = "category", length = 255)
   private String category;
 
+  @Column(name = "one_line_summary", columnDefinition = "TEXT")
+  private String oneLineSummary;
+
   @Column(name = "url", length = 1000)
   private String url;
 
