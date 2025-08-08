@@ -61,11 +61,6 @@ public class UserController {
     return ApiResponse.of(UserSuccessStatus.GET_REPORT_SUCCESS, response);
   }
 
-
-
-
-  // TODO 해야됨
-
   @Operation(summary = "구독 상태 확인", description = "현재 사용자의 구독 상태를 확인합니다.")
   @GetMapping("/subscribe")
   public ApiResponse<Object> getSubscribeStatus(
@@ -75,6 +70,10 @@ public class UserController {
     return ApiResponse.onSuccess(UserSuccessStatus.GET_SUBSCRIBE_STATUS_SUCCESS);
   }
 
+
+
+
+  // TODO 해야됨 (후순위 기능들, 네이버페이 도입예정)
   @Operation(summary = "구독하기", description = "사용자가 구독을 신청합니다.")
   @PostMapping("/subscribe")
   public ApiResponse<Object> subscribe(

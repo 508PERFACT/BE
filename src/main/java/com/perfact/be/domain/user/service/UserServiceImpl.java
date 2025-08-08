@@ -1,6 +1,9 @@
 package com.perfact.be.domain.user.service;
 
 import com.perfact.be.domain.auth.dto.NaverUserProfile;
+import com.perfact.be.domain.credit.entity.SubscriptionPlans;
+import com.perfact.be.domain.credit.entity.enums.PlanType;
+import com.perfact.be.domain.credit.repository.SubscriptionPlansRepository;
 import com.perfact.be.domain.user.entity.User;
 import com.perfact.be.domain.user.entity.enums.Role;
 import com.perfact.be.domain.user.entity.enums.SocialType;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
+  private final SubscriptionPlansRepository subscriptionPlansRepository;
 
   @Override
   @Transactional
@@ -37,6 +41,8 @@ public class UserServiceImpl implements UserService {
   }
 
   private User registerNewUser(NaverUserProfile profile) {
+    SubscriptionPlans defaultPlan = subscriptionPlansRepository.findByName(PlanType.FREE)
+        .orElseThrow(() -> new UserHandler(UserErrorStatus.PLAN_NOT_FOUND));
     try {
       User newUser = User.builder()
           .email(profile.getEmail())
@@ -45,6 +51,9 @@ public class UserServiceImpl implements UserService {
           .socialType(SocialType.NAVER)
           .role(Role.ROLE_USER)
           .status(UserStatus.ACTIVE)
+          .plan(defaultPlan)
+          .isSubscribe(false)
+          .isNotificationAgreed(false)
           .build();
 
       return userRepository.save(newUser);
