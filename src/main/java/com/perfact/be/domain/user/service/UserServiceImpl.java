@@ -2,8 +2,11 @@ package com.perfact.be.domain.user.service;
 
 import com.perfact.be.domain.auth.dto.NaverUserProfile;
 import com.perfact.be.domain.credit.entity.SubscriptionPlans;
+import com.perfact.be.domain.credit.entity.enums.CreditLogType;
 import com.perfact.be.domain.credit.entity.enums.PlanType;
+import com.perfact.be.domain.credit.repository.CreditLogRepository;
 import com.perfact.be.domain.credit.repository.SubscriptionPlansRepository;
+import com.perfact.be.domain.user.dto.UserResponseDto.SubscribeStatusResponse;
 import com.perfact.be.domain.user.entity.User;
 import com.perfact.be.domain.user.entity.enums.Role;
 import com.perfact.be.domain.user.entity.enums.SocialType;
@@ -12,6 +15,7 @@ import com.perfact.be.domain.user.exception.UserHandler;
 import com.perfact.be.domain.user.exception.status.UserErrorStatus;
 import com.perfact.be.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.time.YearMonth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final SubscriptionPlansRepository subscriptionPlansRepository;
+  private final CreditLogRepository creditLogRepository;
 
   @Override
   @Transactional
@@ -39,6 +44,37 @@ public class UserServiceImpl implements UserService {
     return userRepository.findById(userId)
         .orElseThrow(() -> new UserHandler(UserErrorStatus.USER_NOT_FOUND));
   }
+
+  @Override
+  public SubscribeStatusResponse getSubscribeStatus(User loginUser) {
+    SubscriptionPlans plan = loginUser.getPlan();
+
+    String planName = plan != null ? plan.getName().toString() : "UNKNOWN";
+    String subscribeStatus = planName.equals("FREE") ? "무료 플랜 사용 중" : "유료 플랜 사용 중";
+    String nextBillingDate = planName.equals("FREE") ? "무료 플랜 사용 중" : "미정";
+    Long dailyCredit = plan != null ? plan.getDailyCredit() : 0L;
+
+    Long todayUsage = creditLogRepository.sumTodayUsedCreditByUserAndType(
+        loginUser,
+        CreditLogType.REPORT_CREATE
+    );
+
+    Long thisMonthUsage = creditLogRepository.sumMonthlyUsedCreditByUserAndType(
+        loginUser,
+        CreditLogType.REPORT_CREATE,
+        YearMonth.now().toString()
+    );
+
+    return new SubscribeStatusResponse(
+        planName,
+        subscribeStatus,
+        nextBillingDate,
+        dailyCredit,
+        todayUsage,
+        thisMonthUsage
+    );
+  }
+
 
   private User registerNewUser(NaverUserProfile profile) {
     SubscriptionPlans defaultPlan = subscriptionPlansRepository.findByName(PlanType.FREE)

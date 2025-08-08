@@ -3,6 +3,7 @@ package com.perfact.be.domain.user.controller;
 import com.perfact.be.domain.report.dto.ReportResponseDto;
 import com.perfact.be.domain.report.dto.ReportResponseDto.ReportListDto;
 import com.perfact.be.domain.report.service.ReportService;
+import com.perfact.be.domain.user.dto.UserResponseDto.SubscribeStatusResponse;
 import com.perfact.be.domain.user.entity.User;
 import com.perfact.be.domain.user.exception.status.UserSuccessStatus;
 import com.perfact.be.domain.user.service.UserService;
@@ -63,11 +64,12 @@ public class UserController {
 
   @Operation(summary = "구독 상태 확인", description = "현재 사용자의 구독 상태를 확인합니다.")
   @GetMapping("/subscribe")
-  public ApiResponse<Object> getSubscribeStatus(
+  public ApiResponse<SubscribeStatusResponse> getSubscribeStatus(
       @Parameter(hidden = true) @CurrentUser User loginUser
   ) {
     //TODO : 구독상태 확인 서비스 로직 구현 예정
-    return ApiResponse.onSuccess(UserSuccessStatus.GET_SUBSCRIBE_STATUS_SUCCESS);
+    SubscribeStatusResponse response = userService.getSubscribeStatus(loginUser);
+    return ApiResponse.of(UserSuccessStatus.GET_SUBSCRIBE_STATUS_SUCCESS,response);
   }
 
 
