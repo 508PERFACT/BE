@@ -20,6 +20,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,30 +55,37 @@ public class UserServiceImpl implements UserService {
     SubscriptionPlans plan = loginUser.getPlan();
 
     String planName = plan != null ? plan.getName().toString() : "UNKNOWN";
-    String subscribeStatus = planName.equals("FREE") ? "무료 플랜 사용 중" : "유료 플랜 사용 중";
-    String nextBillingDate = planName.equals("FREE") ? "무료 플랜 사용 중" : "미정";
+    boolean isFreePlan = "FREE".equals(planName);
+    String subscribeStatus = isFreePlan ? "무료 플랜 사용 중" : "유료 플랜 사용 중";
+    String nextBillingDate = isFreePlan ? "무료 플랜 사용 중" : "미정";
     Long dailyCredit = plan != null ? plan.getDailyCredit() : 0L;
 
     LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
     LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
-    Long todayUsage = creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
-        loginUser,
-        CreditLogType.REPORT_CREATE,
-        startOfToday,
-        startOfTomorrow
-    );
-
 
     YearMonth now = YearMonth.now();
     LocalDateTime startOfMonth = now.atDay(1).atStartOfDay();
     LocalDateTime startOfNextMonth = now.plusMonths(1).atDay(1).atStartOfDay();
-    Long thisMonthUsage = creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
-        loginUser,
-        CreditLogType.REPORT_CREATE,
-        startOfMonth,
-        startOfNextMonth
-    );
 
+    // 오늘 사용량
+    Long todayUsage = Optional.ofNullable(
+        creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
+            loginUser,
+            CreditLogType.REPORT_CREATE,
+            startOfToday,
+            startOfTomorrow
+        )
+    ).map(Math::abs).orElse(0L);
+
+    // 이번 달 사용량
+    Long thisMonthUsage = Optional.ofNullable(
+        creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
+            loginUser,
+            CreditLogType.REPORT_CREATE,
+            startOfMonth,
+            startOfNextMonth
+        )
+    ).map(Math::abs).orElse(0L);
     return new SubscribeStatusResponse(
         planName,
         subscribeStatus,
@@ -87,6 +95,7 @@ public class UserServiceImpl implements UserService {
         thisMonthUsage
     );
   }
+
 
   @Override
   @Transactional
