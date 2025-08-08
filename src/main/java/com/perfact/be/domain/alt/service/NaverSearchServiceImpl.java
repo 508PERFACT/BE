@@ -26,7 +26,6 @@ public class NaverSearchServiceImpl implements NaverSearchService {
 
       // 네이버 API 호출
       String searchResult = naverApiService.searchNaverNews(searchQuery);
-      log.info("네이버 API 응답: {}", searchResult);
 
       // JSON 응답 파싱
       JsonNode jsonNode = objectMapper.readTree(searchResult);

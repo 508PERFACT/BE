@@ -43,14 +43,6 @@ public class JsonParsingServiceImpl implements JsonParsingService {
     try {
       String cleanedJson = removeMarkdownCodeBlocks(jsonString);
 
-      // JSON 구조 검증
-      if (!cleanedJson.startsWith("{") || !cleanedJson.endsWith("}")) {
-        log.error("JSON 구조가 올바르지 않습니다. 시작: {}, 끝: {}",
-            cleanedJson.length() > 0 ? cleanedJson.charAt(0) : "empty",
-            cleanedJson.length() > 0 ? cleanedJson.charAt(cleanedJson.length() - 1) : "empty");
-        throw new RuntimeException("JSON 구조가 올바르지 않습니다.");
-      }
-
       return objectMapper.readTree(cleanedJson);
     } catch (Exception e) {
       log.error("JSON 파싱 실패: {}", e.getMessage(), e);
