@@ -29,6 +29,9 @@ public class ReportResponseDto {
   @Schema(description = "뉴스 카테고리", example = "사회")
   private String category;
 
+  @Schema(description = "한 줄 요약", example = "기사의 핵심 내용을 한 문장으로 요약")
+  private String oneLineSummary;
+
   @Schema(description = "뉴스 URL", example = "https://news.naver.com/...")
   private String url;
 
@@ -65,6 +68,7 @@ public class ReportResponseDto {
         .publisher(report.getPublisher())
         .publicationDate(report.getPublicationDate().toString())
         .summary(report.getSummary())
+        .oneLineSummary(report.getOneLineSummary()) 
         .chatbotContext(report.getChatbotContext())
         .createdAt(report.getCreatedAt())
         .updatedAt(report.getUpdatedAt())

@@ -3,6 +3,7 @@ package com.perfact.be.domain.news.service;
 import com.perfact.be.domain.news.exception.NewsHandler;
 import com.perfact.be.domain.news.exception.status.NewsErrorStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,12 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URLEncoder;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NaverApiServiceImpl implements NaverApiService {
 
   private final RestTemplate restTemplate;
@@ -33,15 +36,25 @@ public class NaverApiServiceImpl implements NaverApiService {
   @Override
   public String searchNaverNews(String query) {
     try {
-      String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-      String searchUrl = String.format("%s?query=%s&display=10&start=1&sort=sim",
-          naverSearchUrl, encodedQuery);
+      log.info("Original Query: {}", query);
+
+      URI uri = UriComponentsBuilder
+          .fromUriString(naverSearchUrl)
+          .queryParam("query", query)
+          .queryParam("display", 10)
+          .queryParam("start", 1)
+          .queryParam("sort", "sim")
+          .encode(StandardCharsets.UTF_8)
+          .build()
+          .toUri();
+
+      log.info("Request URI: {}", uri);
 
       HttpHeaders headers = createNaverHeaders();
       HttpEntity<String> entity = new HttpEntity<>(headers);
 
       ResponseEntity<String> response = restTemplate.exchange(
-          searchUrl, HttpMethod.GET, entity, String.class);
+          uri, HttpMethod.GET, entity, String.class);
 
       if (response.getStatusCode() == HttpStatus.OK) {
         return response.getBody();
@@ -50,11 +63,11 @@ public class NaverApiServiceImpl implements NaverApiService {
       }
 
     } catch (Exception e) {
+      log.error("Error during Naver API call for query: " + query, e);
       throw new NewsHandler(NewsErrorStatus.NEWS_NAVER_API_CALL_FAILED);
     }
   }
 
-  // 네이버 API 헤더 생성
   private HttpHeaders createNaverHeaders() {
     HttpHeaders headers = new HttpHeaders();
     headers.set("X-Naver-Client-Id", naverClientId);

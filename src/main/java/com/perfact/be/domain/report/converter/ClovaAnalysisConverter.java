@@ -36,6 +36,7 @@ public class ClovaAnalysisConverter {
 
       // 필수 필드들이 존재하는지 확인하고 안전하게 추출
       String category = getStringValue(analysis, "field", "분류 없음");
+      String oneLineSummary = getStringValue(analysis, "one_line_summary", "한 줄 요약 없음");
       String source = getStringValue(analysis, "source", "출처 없음");
       String chatbotContext = getStringValue(analysis, "chatbot_context", "챗봇 컨텍스트 없음");
 
@@ -72,11 +73,13 @@ public class ClovaAnalysisConverter {
           .user(user)
           .title(newsData.getTitle())
           .category(category)
+          .oneLineSummary(oneLineSummary)
           .url(url)
           .publisher(source)
           .publicationDate(parsePublicationDate(newsData.getDate()))
           .summary(summary)
           .chatbotContext(chatbotContext)
+          .articleContent(newsData.getContent())
           .build();
     } catch (Exception e) {
       log.error("분석 결과를 Report로 변환 실패: {}", e.getMessage(), e);
