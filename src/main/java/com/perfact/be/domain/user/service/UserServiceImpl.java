@@ -15,6 +15,8 @@ import com.perfact.be.domain.user.exception.UserHandler;
 import com.perfact.be.domain.user.exception.status.UserErrorStatus;
 import com.perfact.be.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,15 +56,24 @@ public class UserServiceImpl implements UserService {
     String nextBillingDate = planName.equals("FREE") ? "무료 플랜 사용 중" : "미정";
     Long dailyCredit = plan != null ? plan.getDailyCredit() : 0L;
 
-    Long todayUsage = creditLogRepository.sumTodayUsedCreditByUserAndType(
-        loginUser,
-        CreditLogType.REPORT_CREATE
-    );
-
-    Long thisMonthUsage = creditLogRepository.sumMonthlyUsedCreditByUserAndType(
+    LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+    LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
+    Long todayUsage = creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
         loginUser,
         CreditLogType.REPORT_CREATE,
-        YearMonth.now().toString()
+        startOfToday,
+        startOfTomorrow
+    );
+
+
+    YearMonth now = YearMonth.now();
+    LocalDateTime startOfMonth = now.atDay(1).atStartOfDay();
+    LocalDateTime startOfNextMonth = now.plusMonths(1).atDay(1).atStartOfDay();
+    Long thisMonthUsage = creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
+        loginUser,
+        CreditLogType.REPORT_CREATE,
+        startOfMonth,
+        startOfNextMonth
     );
 
     return new SubscribeStatusResponse(
@@ -74,6 +85,7 @@ public class UserServiceImpl implements UserService {
         thisMonthUsage
     );
   }
+
 
 
   private User registerNewUser(NaverUserProfile profile) {
