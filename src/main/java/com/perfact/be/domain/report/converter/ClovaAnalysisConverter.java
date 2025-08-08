@@ -79,6 +79,7 @@ public class ClovaAnalysisConverter {
           .publicationDate(parsePublicationDate(newsData.getDate()))
           .summary(summary)
           .chatbotContext(chatbotContext)
+          .articleContent(newsData.getContent())
           .build();
     } catch (Exception e) {
       log.error("분석 결과를 Report로 변환 실패: {}", e.getMessage(), e);

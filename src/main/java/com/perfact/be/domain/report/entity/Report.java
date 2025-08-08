@@ -56,6 +56,9 @@ public class Report extends BaseEntity {
   @Column(name = "chatbot_context", columnDefinition = "TEXT")
   private String chatbotContext;
 
+  @Column(name = "article_content", columnDefinition = "TEXT")
+  private String articleContent;
+
   public void setUser(User user) {
     this.user = user;
   }
