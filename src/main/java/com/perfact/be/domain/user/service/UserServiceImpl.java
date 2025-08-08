@@ -4,6 +4,8 @@ import com.perfact.be.domain.auth.dto.NaverUserProfile;
 import com.perfact.be.domain.credit.entity.SubscriptionPlans;
 import com.perfact.be.domain.credit.entity.enums.CreditLogType;
 import com.perfact.be.domain.credit.entity.enums.PlanType;
+import com.perfact.be.domain.credit.exception.CreditHandler;
+import com.perfact.be.domain.credit.exception.status.CreditErrorStatus;
 import com.perfact.be.domain.credit.repository.CreditLogRepository;
 import com.perfact.be.domain.credit.repository.SubscriptionPlansRepository;
 import com.perfact.be.domain.user.dto.UserResponseDto.SubscribeStatusResponse;
@@ -86,6 +88,16 @@ public class UserServiceImpl implements UserService {
     );
   }
 
+  @Override
+  @Transactional
+  public void decreaseCredit(User user, int amount) {
+    long newCredit = user.getCredit() - amount;
+    if (newCredit < 0) {
+      throw new CreditHandler(CreditErrorStatus.CREDIT_NOT_ENOUGH);
+    }
+    user.setCredit(newCredit);
+    userRepository.save(user);
+  }
 
 
   private User registerNewUser(NaverUserProfile profile) {

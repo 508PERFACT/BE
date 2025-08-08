@@ -11,4 +11,6 @@ public interface UserService {
   Object findById(Long userId);
 
   SubscribeStatusResponse getSubscribeStatus(User loginUser);
+
+  void decreaseCredit(User user, int cost);
 }
