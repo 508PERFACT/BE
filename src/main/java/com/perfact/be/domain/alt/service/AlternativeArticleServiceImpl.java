@@ -6,7 +6,7 @@ import com.perfact.be.domain.alt.dto.ArticleExtractionResult;
 import com.perfact.be.domain.alt.entity.AlternativeArticle;
 import com.perfact.be.domain.alt.entity.ContentComparison;
 import com.perfact.be.domain.alt.entity.PerspectiveComparison;
-import com.perfact.be.domain.alt.exception.AltExceptionHandler;
+
 import com.perfact.be.domain.alt.exception.AltHandler;
 import com.perfact.be.domain.alt.exception.status.AltErrorStatus;
 import com.perfact.be.domain.alt.repository.AlternativeArticleRepository;
@@ -34,7 +34,7 @@ public class AlternativeArticleServiceImpl implements AlternativeArticleService 
   private final PerspectiveComparisonRepository perspectiveComparisonRepository;
   private final NaverSearchService naverSearchService;
   private final ArticleExtractionService articleExtractionService;
-  private final AltExceptionHandler exceptionHandler;
+
   private final ClovaApiService clovaApiService;
   private final AlternativeArticleConverter alternativeArticleConverter;
 
@@ -104,56 +104,52 @@ public class AlternativeArticleServiceImpl implements AlternativeArticleService 
    */
   private void persistAnalysisResult(Report report, String opposingArticleUrl,
       ArticleExtractionResult extractionResult, AlternativeArticleResponseDto responseDto) {
-    exceptionHandler.safeExecute("분석 결과 저장", () -> {
-      try {
-        // AlternativeArticle 저장
-        AlternativeArticle alternativeArticle = alternativeArticleConverter.toAlternativeArticle(
-            report, opposingArticleUrl, extractionResult, responseDto);
-        AlternativeArticle savedAlternativeArticle = alternativeArticleRepository.save(alternativeArticle);
+    try {
+      // AlternativeArticle 저장
+      AlternativeArticle alternativeArticle = alternativeArticleConverter.toAlternativeArticle(
+          report, opposingArticleUrl, extractionResult, responseDto);
+      AlternativeArticle savedAlternativeArticle = alternativeArticleRepository.save(alternativeArticle);
 
-        // ContentComparison 저장
-        for (AlternativeArticleResponseDto.ContentComparisonDto contentDto : responseDto.getContentComparisons()) {
-          ContentComparison contentComparison = alternativeArticleConverter.toContentComparison(contentDto,
-              savedAlternativeArticle);
-          contentComparisonRepository.save(contentComparison);
-        }
-
-        // PerspectiveComparison 저장
-        for (AlternativeArticleResponseDto.PerspectiveComparisonDto perspectiveDto : responseDto
-            .getPerspectiveComparisons()) {
-          PerspectiveComparison perspectiveComparison = alternativeArticleConverter
-              .toPerspectiveComparison(perspectiveDto, savedAlternativeArticle);
-          perspectiveComparisonRepository.save(perspectiveComparison);
-        }
-
-        log.info("분석 결과 저장 완료 - alternativeArticleId: {}", savedAlternativeArticle.getAlternativeArticleId());
-
-      } catch (Exception e) {
-        log.error("분석 결과 저장 실패: {}", e.getMessage(), e);
-        throw new AltHandler(AltErrorStatus.ALT_PERSISTENCE_FAILED);
+      // ContentComparison 저장
+      for (AlternativeArticleResponseDto.ContentComparisonDto contentDto : responseDto.getContentComparisons()) {
+        ContentComparison contentComparison = alternativeArticleConverter.toContentComparison(contentDto,
+            savedAlternativeArticle);
+        contentComparisonRepository.save(contentComparison);
       }
-    });
+
+      // PerspectiveComparison 저장
+      for (AlternativeArticleResponseDto.PerspectiveComparisonDto perspectiveDto : responseDto
+          .getPerspectiveComparisons()) {
+        PerspectiveComparison perspectiveComparison = alternativeArticleConverter
+            .toPerspectiveComparison(perspectiveDto, savedAlternativeArticle);
+        perspectiveComparisonRepository.save(perspectiveComparison);
+      }
+
+      log.info("분석 결과 저장 완료 - alternativeArticleId: {}", savedAlternativeArticle.getAlternativeArticleId());
+
+    } catch (Exception e) {
+      log.error("분석 결과 저장 실패: {}", e.getMessage(), e);
+      throw new AltHandler(AltErrorStatus.ALT_PERSISTENCE_FAILED);
+    }
   }
 
   /**
    * AlternativeArticle 엔티티를 응답 DTO로 변환합니다.
    */
   private AlternativeArticleResponseDto convertToResponseDto(AlternativeArticle alternativeArticle) {
-    return exceptionHandler.safeExtract("응답 DTO 변환", () -> {
-      try {
-        List<ContentComparison> contentComparisons = contentComparisonRepository
-            .findByAlternativeArticleAlternativeArticleId(alternativeArticle.getAlternativeArticleId());
+    try {
+      List<ContentComparison> contentComparisons = contentComparisonRepository
+          .findByAlternativeArticleAlternativeArticleId(alternativeArticle.getAlternativeArticleId());
 
-        List<PerspectiveComparison> perspectiveComparisons = perspectiveComparisonRepository
-            .findByAlternativeArticleAlternativeArticleId(alternativeArticle.getAlternativeArticleId());
+      List<PerspectiveComparison> perspectiveComparisons = perspectiveComparisonRepository
+          .findByAlternativeArticleAlternativeArticleId(alternativeArticle.getAlternativeArticleId());
 
-        return alternativeArticleConverter.toResponseDto(alternativeArticle, contentComparisons,
-            perspectiveComparisons);
+      return alternativeArticleConverter.toResponseDto(alternativeArticle, contentComparisons,
+          perspectiveComparisons);
 
-      } catch (Exception e) {
-        log.error("응답 DTO 변환 실패: {}", e.getMessage(), e);
-        throw new AltHandler(AltErrorStatus.ALT_CONVERSION_FAILED);
-      }
-    });
+    } catch (Exception e) {
+      log.error("응답 DTO 변환 실패: {}", e.getMessage(), e);
+      throw new AltHandler(AltErrorStatus.ALT_CONVERSION_FAILED);
+    }
   }
 }
