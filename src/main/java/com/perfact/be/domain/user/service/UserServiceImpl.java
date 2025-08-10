@@ -8,6 +8,7 @@ import com.perfact.be.domain.credit.exception.CreditHandler;
 import com.perfact.be.domain.credit.exception.status.CreditErrorStatus;
 import com.perfact.be.domain.credit.repository.CreditLogRepository;
 import com.perfact.be.domain.credit.repository.SubscriptionPlansRepository;
+import com.perfact.be.domain.user.dto.UserResponseDto.NicknameResponse;
 import com.perfact.be.domain.user.dto.UserResponseDto.SubscribeStatusResponse;
 import com.perfact.be.domain.user.entity.User;
 import com.perfact.be.domain.user.entity.enums.Role;
@@ -73,9 +74,8 @@ public class UserServiceImpl implements UserService {
             loginUser,
             CreditLogType.REPORT_CREATE,
             startOfToday,
-            startOfTomorrow
-        )
-    ).map(Math::abs).orElse(0L);
+            startOfTomorrow))
+        .map(Math::abs).orElse(0L);
 
     // 이번 달 사용량
     Long thisMonthUsage = Optional.ofNullable(
@@ -83,19 +83,21 @@ public class UserServiceImpl implements UserService {
             loginUser,
             CreditLogType.REPORT_CREATE,
             startOfMonth,
-            startOfNextMonth
-        )
-    ).map(Math::abs).orElse(0L);
+            startOfNextMonth))
+        .map(Math::abs).orElse(0L);
     return new SubscribeStatusResponse(
         planName,
         subscribeStatus,
         nextBillingDate,
         dailyCredit,
         todayUsage,
-        thisMonthUsage
-    );
+        thisMonthUsage);
   }
 
+  @Override
+  public NicknameResponse getNickname(User loginUser) {
+    return new NicknameResponse(loginUser.getNickname());
+  }
 
   @Override
   @Transactional
@@ -107,7 +109,6 @@ public class UserServiceImpl implements UserService {
     user.setCredit(newCredit);
     userRepository.save(user);
   }
-
 
   private User registerNewUser(NaverUserProfile profile) {
     SubscriptionPlans defaultPlan = subscriptionPlansRepository.findByName(PlanType.FREE)
