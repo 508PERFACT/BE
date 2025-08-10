@@ -68,7 +68,7 @@ public class ReportResponseDto {
         .publisher(report.getPublisher())
         .publicationDate(report.getPublicationDate().toString())
         .summary(report.getSummary())
-        .oneLineSummary(report.getOneLineSummary()) 
+        .oneLineSummary(report.getOneLineSummary())
         .chatbotContext(report.getChatbotContext())
         .createdAt(report.getCreatedAt())
         .updatedAt(report.getUpdatedAt())
@@ -89,17 +89,32 @@ public class ReportResponseDto {
     @Schema(description = "출처 신뢰성 점수", example = "80")
     private Integer sourceReliability;
 
+    @Schema(description = "출처 신뢰성 점수 설명", example = "주요 통신사(연합뉴스) 보도, 기자명 명시")
+    private String sourceReliabilityReason;
+
     @Schema(description = "사실 근거 점수", example = "85")
     private Integer factualBasis;
+
+    @Schema(description = "사실 근거 점수 설명", example = "재난 문자 발송 시각, 지역별 강수량 등 수치 제시, 지자체 인용")
+    private String factualBasisReason;
 
     @Schema(description = "광고/과장 표현 점수", example = "90")
     private Integer adExaggeration;
 
+    @Schema(description = "광고/과장 표현 점수 설명", example = "객관적 사실 전달 중심, 광고/과장 표현 없음")
+    private String adExaggerationReason;
+
     @Schema(description = "편향성 점수", example = "75")
     private Integer bias;
 
+    @Schema(description = "편향성 점수 설명", example = "재난 상황 및 당국 대응을 중립적으로 전달")
+    private String biasReason;
+
     @Schema(description = "기사 형식 점수", example = "88")
     private Integer articleStructure;
+
+    @Schema(description = "기사 형식 점수 설명", example = "제목과 내용 일치, 명확한 문단 구성, 간결한 문체")
+    private String articleStructureReason;
 
     @Schema(description = "전체 신뢰도 점수", example = "84")
     private Integer overallScore;
@@ -107,10 +122,15 @@ public class ReportResponseDto {
     public static TrueScoreDto from(TrueScore trueScore) {
       return TrueScoreDto.builder()
           .sourceReliability(trueScore.getSourceReliability())
+          .sourceReliabilityReason(trueScore.getSourceReliabilityReason())
           .factualBasis(trueScore.getFactualBasis())
+          .factualBasisReason(trueScore.getFactualBasisReason())
           .adExaggeration(trueScore.getAdExaggeration())
+          .adExaggerationReason(trueScore.getAdExaggerationReason())
           .bias(trueScore.getBias())
+          .biasReason(trueScore.getBiasReason())
           .articleStructure(trueScore.getArticleStructure())
+          .articleStructureReason(trueScore.getArticleStructureReason())
           .overallScore(trueScore.getOverallScore())
           .build();
     }
@@ -126,10 +146,10 @@ public class ReportResponseDto {
     @Schema(description = "배지 ID", example = "1")
     private Long badgeId;
 
-    @Schema(description = "배지 이름", example = "신뢰 가능")
+    @Schema(description = "배지 이름", example = "PARTIALLY_TRUSTWORTHY")
     private String badgeName;
 
-    @Schema(description = "배지 설명", example = "이 기사는 신뢰할 수 있습니다")
+    @Schema(description = "배지 설명", example = "부분적인 신뢰 가능")
     private String badgeDescription;
 
     public static ReportBadgeDto from(ReportBadge reportBadge) {
@@ -163,7 +183,6 @@ public class ReportResponseDto {
     @Schema(description = "현재 페이지가 마지막 페이지 여부", example = "false")
     private boolean isLast;
   }
-
 
   @Getter
   @Builder

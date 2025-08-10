@@ -26,17 +26,32 @@ public class TrueScore {
   @Column(name = "source_reliability")
   private Integer sourceReliability;
 
+  @Column(name = "source_reliability_reason", length = 255)
+  private String sourceReliabilityReason;
+
   @Column(name = "factual_basis")
   private Integer factualBasis;
+
+  @Column(name = "factual_basis_reason", length = 255)
+  private String factualBasisReason;
 
   @Column(name = "ad_exaggeration")
   private Integer adExaggeration;
 
+  @Column(name = "ad_exaggeration_reason", length = 255)
+  private String adExaggerationReason;
+
   @Column(name = "bias")
   private Integer bias;
 
+  @Column(name = "bias_reason", length = 255)
+  private String biasReason;
+
   @Column(name = "article_structure")
   private Integer articleStructure;
+
+  @Column(name = "article_structure_reason", length = 255)
+  private String articleStructureReason;
 
   @Column(name = "overall_score")
   private Integer overallScore;

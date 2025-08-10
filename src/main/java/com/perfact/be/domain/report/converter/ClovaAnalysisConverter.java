@@ -99,26 +99,39 @@ public class ClovaAnalysisConverter {
       int bias = 0;
       int articleStructure = 0;
 
+      // reason 필드들 추가
+      String sourceReliabilityReason = "";
+      String factualBasisReason = "";
+      String adExaggerationReason = "";
+      String biasReason = "";
+      String articleStructureReason = "";
+
       if (reliabilityAnalysis != null && reliabilityAnalysis.isArray()) {
         for (JsonNode item : reliabilityAnalysis) {
           String categoryName = getStringValue(item, "category_name", "");
           int score = getIntValue(item, "score", 0);
+          String reason = getStringValue(item, "reason", "");
 
           switch (categoryName) {
             case "출처 신뢰성":
               sourceReliability = score;
+              sourceReliabilityReason = reason;
               break;
             case "사실 근거":
               factualBasis = score;
+              factualBasisReason = reason;
               break;
             case "광고/과장 표현":
               adExaggeration = score;
+              adExaggerationReason = reason;
               break;
             case "편향성":
               bias = score;
+              biasReason = reason;
               break;
             case "기사 형식":
               articleStructure = score;
+              articleStructureReason = reason;
               break;
           }
         }
@@ -128,10 +141,15 @@ public class ClovaAnalysisConverter {
 
       return TrueScore.builder()
           .sourceReliability(sourceReliability)
+          .sourceReliabilityReason(sourceReliabilityReason)
           .factualBasis(factualBasis)
+          .factualBasisReason(factualBasisReason)
           .adExaggeration(adExaggeration)
+          .adExaggerationReason(adExaggerationReason)
           .bias(bias)
+          .biasReason(biasReason)
           .articleStructure(articleStructure)
+          .articleStructureReason(articleStructureReason)
           .overallScore(overallScore)
           .build();
     } catch (Exception e) {
