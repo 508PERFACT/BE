@@ -22,7 +22,7 @@ public class AlternativeArticleController {
 
   private final AlternativeArticleService alternativeArticleService;
 
-  @CreditCheck(cost=1)
+  // @CreditCheck(cost=1)
   @Operation(summary = "대안 기사 분석", description = "리포트의 기사 내용을 기반으로 반대 관점의 기사를 찾아 비교 분석을 수행합니다.")
   @GetMapping("/{reportId}/alternative")
   public ApiResponse<AlternativeArticleResponseDto> getAlternativeArticle(
