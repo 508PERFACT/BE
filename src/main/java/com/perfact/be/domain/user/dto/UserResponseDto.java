@@ -30,6 +30,13 @@ public class UserResponseDto {
     private Long thisMonthUsage;
   }
 
+  @Getter
+  @AllArgsConstructor
+  @Schema(description = "닉네임 응답 DTO")
+  public static class NicknameResponse {
+
+    @Schema(description = "사용자 닉네임", example = "인고사")
+    private String nickname;
+  }
 
 }
-
