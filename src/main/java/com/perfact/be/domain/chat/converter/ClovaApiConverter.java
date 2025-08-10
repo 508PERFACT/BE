@@ -38,12 +38,10 @@ public class ClovaApiConverter {
   // 채팅 API 호출을 위한 요청을 생성
   public ClovaChatRequestDTO createChatRequest(String chatbotContext, String userInput) {
     List<ClovaChatRequestDTO.Message> messages = new ArrayList<>();
-
-    // 시스템 메시지
     messages.add(ClovaChatRequestDTO.Message.builder()
         .role("system")
         .content(
-            "You are a friendly and helpful AI assistant for the 'Perfact' service. Your role is to answer user questions based ONLY on the provided analysis report summary. Do not make up information. If the answer is not in the provided context, say you don't know. Answer in Korean.")
+            "Important: The service name is 'Perfact' (P-e-r-f-a-c-t). This is the correct spelling, not 'Perfect'. You must always use the name 'Perfact' when referring to the service.\n\nYou are a friendly and helpful AI assistant for the 'Perfact' service. Your role is to answer user questions based ONLY on the provided analysis report summary. Do not make up information. If the answer is not in the provided context, say you don't know. Answer in Korean.")
         .build());
 
     // 사용자 메시지 (리포트 컨텍스트 + 질문)
