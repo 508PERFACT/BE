@@ -55,7 +55,8 @@ public class ChatServiceImpl implements ChatService {
       chatLogRepository.save(userChatLog);
 
       // 3. Clova API 호출을 위한 요청 생성
-      var clovaRequest = clovaApiConverter.createChatRequest(report.getChatbotContext(), request.getUserInput());
+      var clovaRequest = clovaApiConverter.createChatRequest(report.getChatbotContext(), report.getArticleContent(),
+          request.getUserInput());
 
       // 4. Clova API 호출
       var clovaResponse = clovaApiConverter.callChatAPI(clovaRequest);

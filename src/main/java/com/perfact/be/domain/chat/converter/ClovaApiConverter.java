@@ -36,16 +36,17 @@ public class ClovaApiConverter {
   private String CLOVA_API_KEY;
 
   // 채팅 API 호출을 위한 요청을 생성
-  public ClovaChatRequestDTO createChatRequest(String chatbotContext, String userInput) {
+  public ClovaChatRequestDTO createChatRequest(String chatbotContext, String articleContent, String userInput) {
     List<ClovaChatRequestDTO.Message> messages = new ArrayList<>();
     messages.add(ClovaChatRequestDTO.Message.builder()
         .role("system")
         .content(
-            "Important: The service name is 'Perfact' (P-e-r-f-a-c-t). This is the correct spelling, not 'Perfect'. You must always use the name 'Perfact' when referring to the service.\n\nYou are a friendly and helpful AI assistant for the 'Perfact' service. Your role is to answer user questions based ONLY on the provided analysis report summary. Do not make up information. If the answer is not in the provided context, say you don't know. Answer in Korean.")
+            "Important: The service name is 'Perfact' (P-e-r-f-a-c-t). This is the correct spelling, not 'Perfect'. You must always use the name 'Perfact' when referring to the service.\n\nYou are a friendly and helpful AI assistant for the 'Perfact' service. Your role is to answer user questions by referring to both the original news article (`기사 원문`) and the provided AI analysis report summary (`AI 분석 리포트 요약`). Use the original article as the primary source for facts and the analysis report for context about reliability. Do not make up information. If the answer is not in the provided context, say you don't know. Answer in Korean.")
         .build());
 
-    // 사용자 메시지 (리포트 컨텍스트 + 질문)
-    String userContent = chatbotContext + "\n\n[질문]\n" + userInput;
+    // 사용자 메시지 (기사 원문 + 분석 리포트 요약 + 질문)
+    String userContent = "[분석 대상 기사 원문]\n" + articleContent + "\n\n---\n\n[AI 분석 리포트 요약]\n" + chatbotContext
+        + "\n\n이 내용을 기반으로 사용자의 질문에 상세히 답변하세요.\n\n---\n\n[사용자 질문]\n" + userInput;
     messages.add(ClovaChatRequestDTO.Message.builder()
         .role("user")
         .content(userContent)
