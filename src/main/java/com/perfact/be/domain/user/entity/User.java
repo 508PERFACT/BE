@@ -27,7 +27,7 @@ public class User extends BaseEntity {
   private String socialId;
   @Enumerated(EnumType.STRING)
   private SocialType socialType;
-  @Column(name = "nickname", length = 10)
+  @Column(name = "nickname", length = 20)
   private String nickname;
   @Column(name = "email", length = 255)
   private String email;
@@ -35,7 +35,6 @@ public class User extends BaseEntity {
   @Column(length = 20)
   private Role role;
   @Enumerated(EnumType.STRING)
-
   @Builder.Default
   @Column(length = 20, nullable = false)
   private UserStatus status = UserStatus.ACTIVE;
