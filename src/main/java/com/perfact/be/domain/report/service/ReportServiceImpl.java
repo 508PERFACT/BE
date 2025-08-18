@@ -1,6 +1,7 @@
 package com.perfact.be.domain.report.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.perfact.be.domain.news.dto.NewsArticleResponse;
 import com.perfact.be.domain.news.service.NewsService;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -256,12 +258,12 @@ public class ReportServiceImpl implements ReportService {
 
       // JSON 파싱하여 객체로 변환 (더 강력한 인코딩 처리)
       ObjectMapper mapper = new ObjectMapper();
-      mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-      mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-      mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+      mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+      mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+      mapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
 
       // UTF-8로 명시적 인코딩하여 파싱
-      Object jsonObject = mapper.readValue(jsonContent.getBytes("UTF-8"), Object.class);
+      Object jsonObject = mapper.readValue(jsonContent.getBytes(StandardCharsets.UTF_8), Object.class);
 
       log.debug("JSON 파싱 성공");
       return jsonObject;
@@ -301,6 +303,7 @@ public class ReportServiceImpl implements ReportService {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
       headers.setBearerAuth(CLOVA_API_KEY);
+      headers.set("X-NCP-CLOVASTUDIO-REQUEST-ID", generateRequestId());
 
       String requestBody = objectMapper.writeValueAsString(request);
       HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
@@ -325,5 +328,10 @@ public class ReportServiceImpl implements ReportService {
       log.error("Clova API 호출 실패: {}", e.getMessage(), e);
       throw new ReportHandler(ReportErrorStatus.CLOVA_API_CALL_FAILED);
     }
+  }
+
+  // 요청 ID 생성, 옵셔널한 파라미터라 일단 생성은 하지만 추후 필요하다고 판단 시 저장하여 로깅 작업 추가
+  private String generateRequestId() {
+    return java.util.UUID.randomUUID().toString().replace("-", "");
   }
 }

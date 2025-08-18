@@ -91,4 +91,5 @@ jobs:
               -e API_NAVER_CLIENT_ID="${{ secrets.API_NAVER_CLIENT_ID }}" \
               -e API_NAVER_CLIENT_SECRET="${{ secrets.API_NAVER_CLIENT_SECRET }}" \
               -e API_CLOVA_KEY="${{ secrets.API_CLOVA_KEY }}" \
+              -e API_CLOVA_URL="${{ secrets.API_CLOVA_URL }}" \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
