@@ -56,7 +56,7 @@ public class ClovaApiServiceImpl implements ClovaApiService {
                 .build()))
         .topP(0.8)
         .topK(0)
-        .maxTokens(100)
+        .maxTokens(1024)
         .temperature(0.5)
         .repeatPenalty(5.0)
         .stopBefore(new ArrayList<>())
