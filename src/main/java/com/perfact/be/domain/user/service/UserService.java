@@ -16,4 +16,6 @@ public interface UserService {
   void decreaseCredit(User user, int cost);
 
   NicknameResponse getNickname(User loginUser);
+
+  User createGuestUser(String deviceUuid);
 }

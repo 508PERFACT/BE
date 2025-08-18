@@ -1,6 +1,7 @@
 package com.perfact.be.domain.auth.service;
 
 import com.perfact.be.domain.auth.dto.AuthResponseDto;
+import com.perfact.be.domain.auth.dto.AuthResponseDto.LoginResponse;
 import com.perfact.be.domain.auth.dto.AuthResponseDto.TokenResponse;
 import com.perfact.be.domain.auth.dto.NaverTokenResponse;
 import com.perfact.be.domain.auth.dto.NaverUserInfoResponse;
@@ -83,6 +84,21 @@ public class AuthServiceImpl implements AuthService {
 
     String redisKey = buildRedisKeyFromToken(refreshToken);
     redisTemplate.delete(redisKey);
+  }
+
+  @Override
+  public LoginResponse guestLogin() {
+    String deviceUuid =  UUID.randomUUID().toString();
+    User guestUser = userService.createGuestUser(deviceUuid);
+
+    String accessToken = jwtProvider.generateAccessToken(guestUser.getId(), deviceUuid);
+
+    String rtUuid = UUID.randomUUID().toString();
+    String refreshToken = jwtProvider.generateRefreshToken(guestUser.getId(), deviceUuid, rtUuid);
+
+    String redisKey = "RT:" + deviceUuid + ":" + rtUuid;
+    redisTemplate.opsForValue().set(redisKey, refreshToken, 3, TimeUnit.HOURS);
+    return new AuthResponseDto.LoginResponse(guestUser.getId(), guestUser.getEmail(), accessToken, refreshToken);
   }
 
 

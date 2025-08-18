@@ -57,9 +57,22 @@ public class UserServiceImpl implements UserService {
 
     String planName = plan != null ? plan.getName().toString() : "UNKNOWN";
     boolean isFreePlan = "FREE".equals(planName);
-    String subscribeStatus = isFreePlan ? "무료 플랜 사용 중" : "유료 플랜 사용 중";
-    String nextBillingDate = isFreePlan ? "무료 플랜 사용 중" : "미정";
+    boolean isGuestPlan = "GUEST".equals(planName);
+
+    String subscribeStatus;
+    String nextBillingDate;
     Long dailyCredit = plan != null ? plan.getDailyCredit() : 0L;
+
+    if (isGuestPlan) {
+      subscribeStatus = "게스트 모드 사용 중";
+      nextBillingDate = "게스트 모드는 결제/갱신 없음";
+    } else if (isFreePlan) {
+      subscribeStatus = "무료 플랜 사용 중";
+      nextBillingDate = "무료 플랜 사용 중";
+    } else {
+      subscribeStatus = "유료 플랜 사용 중";
+      nextBillingDate = "미정"; // TODO : 유료 결제 로직 붙으면 수정
+    }
 
     LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
     LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
@@ -70,20 +83,20 @@ public class UserServiceImpl implements UserService {
 
     // 오늘 사용량
     Long todayUsage = Optional.ofNullable(
-        creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
-            loginUser,
-            CreditLogType.REPORT_CREATE,
-            startOfToday,
-            startOfTomorrow))
+            creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
+                loginUser,
+                CreditLogType.REPORT_CREATE,
+                startOfToday,
+                startOfTomorrow))
         .map(Math::abs).orElse(0L);
 
     // 이번 달 사용량
     Long thisMonthUsage = Optional.ofNullable(
-        creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
-            loginUser,
-            CreditLogType.REPORT_CREATE,
-            startOfMonth,
-            startOfNextMonth))
+            creditLogRepository.sumUsedCreditByUserAndTypeAndCreatedAtBetween(
+                loginUser,
+                CreditLogType.REPORT_CREATE,
+                startOfMonth,
+                startOfNextMonth))
         .map(Math::abs).orElse(0L);
     return new SubscribeStatusResponse(
         planName,
@@ -91,13 +104,42 @@ public class UserServiceImpl implements UserService {
         nextBillingDate,
         dailyCredit,
         todayUsage,
-        thisMonthUsage);
+        thisMonthUsage
+    );
   }
 
   @Override
   public NicknameResponse getNickname(User loginUser) {
     return new NicknameResponse(loginUser.getNickname());
   }
+
+  @Override
+  @Transactional
+  public User createGuestUser(String deviceUuid) {
+    return userRepository.findBySocialIdAndSocialType(deviceUuid, SocialType.GUEST)
+        .orElseGet(() -> {
+          // 테스트로 지정하기
+          SubscriptionPlans testPlan = subscriptionPlansRepository.findByName(PlanType.GUEST)
+              .orElseThrow(() -> new UserHandler(UserErrorStatus.PLAN_NOT_FOUND));
+
+          String nick = "게스트-" + deviceUuid.substring(0, 8);
+
+          User newGuest = User.builder()
+              .email(null)                           // 게스트는 이메일 없음.. 기획 보고 나중에 수정해야 될 수도 있음.
+              .nickname(nick)
+              .socialId(deviceUuid)
+              .socialType(SocialType.GUEST)
+              .role(Role.ROLE_GUEST)
+              .status(UserStatus.ACTIVE)
+              .plan(testPlan)
+              .isSubscribe(false)
+              .isNotificationAgreed(false)
+              .build();
+
+          return userRepository.save(newGuest);
+        });
+  }
+
 
   @Override
   @Transactional

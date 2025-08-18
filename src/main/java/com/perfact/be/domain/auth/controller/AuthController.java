@@ -49,6 +49,18 @@ public class AuthController {
   }
 
   @Operation(
+      summary = "게스트 로그인",
+      description = "UUID 기반 게스트 계정을 생성하고 엑세스/리프레시 토큰을 발급합니다."
+  )
+  @PostMapping(value = "/guest-login", produces = "application/json")
+  public ApiResponse<AuthResponseDto.LoginResponse> guestLogin(
+  ) {
+    AuthResponseDto.LoginResponse response = authService.guestLogin();
+    return ApiResponse.of(AuthSuccessStatus.GUEST_LOGIN_SUCCESS, response);
+  }
+
+
+  @Operation(
       summary = "엑세스 토큰 재발급",
       description = "리프레시 토큰을 이용해 엑세스 토큰을 재발급합니다."
   )
