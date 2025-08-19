@@ -9,26 +9,24 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
+@Validated
 @RestController
 @RequestMapping("/api/report")
 @RequiredArgsConstructor
 @Tag(name = "Chat", description = "챗봇 API")
-@Validated
 public class ChatController {
 
-  private final ChatService chatService;
+  private final ChatService chatServiceImpl;
 
   @Operation(summary = "리포트 기반 채팅", description = "특정 리포트의 분석 결과를 바탕으로 AI와 채팅합니다.")
   @PostMapping("/{reportId}/chat")
   public ApiResponse<ChatResponse.ChatResponseDTO> sendMessage(
       @Parameter(description = "리포트 ID", required = true, example = "1") @PathVariable Long reportId,
       @Parameter(description = "채팅 요청", required = true) @RequestBody ChatRequestDTO request) {
-    ChatResponse.ChatResponseDTO response = chatService.sendMessage(reportId, request);
+    ChatResponse.ChatResponseDTO response = chatServiceImpl.sendMessage(reportId, request);
     return ApiResponse.onSuccess(response);
   }
 
@@ -36,11 +34,7 @@ public class ChatController {
   @GetMapping("/{reportId}/chat")
   public ApiResponse<ChatResponse.ChatLogListResponseDTO> getChatLogs(
       @Parameter(description = "리포트 ID", required = true, example = "1") @PathVariable Long reportId) {
-
-    log.info("채팅 로그 조회 요청 - reportId: {}", reportId);
-
-    ChatResponse.ChatLogListResponseDTO response = chatService.getChatLogs(reportId);
-
+    ChatResponse.ChatLogListResponseDTO response = chatServiceImpl.getChatLogs(reportId);
     return ApiResponse.onSuccess(response);
   }
 
@@ -48,11 +42,8 @@ public class ChatController {
   @GetMapping("/{reportId}/chat/recommend")
   public ApiResponse<ChatResponse.RecommendQuestionsResponseDTO> getRecommendQuestions(
       @Parameter(description = "리포트 ID", required = true, example = "1") @PathVariable Long reportId) {
-
-    log.info("추천 질문 조회 요청 - reportId: {}", reportId);
-
-    ChatResponse.RecommendQuestionsResponseDTO response = chatService.getRecommendQuestions(reportId);
-
+    ChatResponse.RecommendQuestionsResponseDTO response = chatServiceImpl.getRecommendQuestions(reportId);
     return ApiResponse.onSuccess(response);
   }
+
 }

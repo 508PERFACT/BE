@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class ChatLogConverter {
-  // ChatLog 엔티티를 ChatLogListResponseDTO로 변환
+  // reportId, List<ChatLong> -> ChatLogListResponseDTO
   public ChatResponse.ChatLogListResponseDTO toResponseDto(Long reportId, List<ChatLog> chatLogs) {
     List<ChatResponse.ChatLogDTO> chatLogDTOs = chatLogs.stream()
         .map(this::toChatLogDto)
@@ -25,7 +25,7 @@ public class ChatLogConverter {
     return result;
   }
 
-  // ChatLog 엔티티를 ChatLogDTO로 변환
+  // ChatLogEntity -> ChatLogDTO
   private ChatResponse.ChatLogDTO toChatLogDto(ChatLog chatLog) {
     return ChatResponse.ChatLogDTO.builder()
         .chatId(chatLog.getChatId())
@@ -34,4 +34,19 @@ public class ChatLogConverter {
         .createdAt(chatLog.getCreatedAt())
         .build();
   }
+
+  // String -> ChatResponseDTO
+  public ChatResponse.ChatResponseDTO toCharResponseDto(String polishedResponse) {
+    return ChatResponse.ChatResponseDTO.builder()
+        .aiResponse(polishedResponse)
+        .build();
+  }
+
+  // List<String> -> RecommendQuestionsResponseDTO
+  public ChatResponse.RecommendQuestionsResponseDTO toRecommendQuestionsResponseDto(List<String> questions) {
+    return ChatResponse.RecommendQuestionsResponseDTO.builder()
+        .questions(questions)
+        .build();
+  }
+
 }
