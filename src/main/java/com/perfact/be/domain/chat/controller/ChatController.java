@@ -1,7 +1,7 @@
 package com.perfact.be.domain.chat.controller;
 
 
-import com.perfact.be.domain.chat.dto.ChatRequestDTO;
+import com.perfact.be.domain.chat.dto.ChatRequest;
 import com.perfact.be.domain.chat.dto.ChatResponse;
 import com.perfact.be.domain.chat.service.ChatService;
 import com.perfact.be.global.apiPayload.ApiResponse;
@@ -25,7 +25,7 @@ public class ChatController {
   @PostMapping("/{reportId}/chat")
   public ApiResponse<ChatResponse.ChatResponseDTO> sendMessage(
       @Parameter(description = "리포트 ID", required = true, example = "1") @PathVariable Long reportId,
-      @Parameter(description = "채팅 요청", required = true) @RequestBody ChatRequestDTO request) {
+      @Parameter(description = "채팅 요청", required = true) @RequestBody ChatRequest request) {
     ChatResponse.ChatResponseDTO response = chatServiceImpl.sendMessage(reportId, request);
     return ApiResponse.onSuccess(response);
   }

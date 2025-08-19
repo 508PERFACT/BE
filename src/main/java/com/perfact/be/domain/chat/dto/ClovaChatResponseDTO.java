@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Clova 채팅 API 응답 DTO")
+@Schema(description = "Clova 공통 응답 DTO")
 public class ClovaChatResponseDTO {
 
   private Status status;

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "채팅 요청 DTO")
-public class ChatRequestDTO {
+public class ChatRequest {
 
   @NotBlank(message = "사용자 질문은 필수 입력값입니다.")
   @Schema(description = "사용자 질문", example = "왜 총점이 85점인가요?")
