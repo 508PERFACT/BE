@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/report")
 @RequiredArgsConstructor
 @Tag(name = "Chat", description = "챗봇 API")
+@Validated
 public class ChatController {
 
   private final ChatService chatService;
@@ -26,11 +28,7 @@ public class ChatController {
   public ApiResponse<ChatResponse.ChatResponseDTO> sendMessage(
       @Parameter(description = "리포트 ID", required = true, example = "1") @PathVariable Long reportId,
       @Parameter(description = "채팅 요청", required = true) @RequestBody ChatRequestDTO request) {
-
-    log.info("채팅 요청 - reportId: {}, userInput: {}", reportId, request.getUserInput());
-
     ChatResponse.ChatResponseDTO response = chatService.sendMessage(reportId, request);
-
     return ApiResponse.onSuccess(response);
   }
 
