@@ -3,13 +3,17 @@ package com.perfact.be.domain.news.service;
 import com.perfact.be.domain.news.config.SelectorConfig;
 import com.perfact.be.domain.news.dto.NewsArticleResponse;
 import com.perfact.be.domain.news.exception.NewsExceptionHandler;
+import com.perfact.be.domain.news.extractor.factory.NewsExtractorFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NewsServiceImpl implements NewsService {
 
+  private final NewsExtractorFactory newsExtractorFactory;
   private final HtmlParserService htmlParserService;
   private final NaverApiService naverApiService;
   private final NewsExtractorService newsExtractorService;
@@ -20,21 +24,6 @@ public class NewsServiceImpl implements NewsService {
   @Override
   public org.jsoup.nodes.Document getHtmlFromUrl(String url) {
     return htmlParserService.getHtmlFromUrl(url);
-  }
-
-  private String extractTitleAreaText(String url) {
-    return exceptionHandler.safeExtractText(url, "extract title", () -> {
-      String[] titleSelectors = selectorConfig.getTitleSelectors();
-
-      for (String selector : titleSelectors) {
-        String title = htmlParserService.extractTextFromElement(url, selector);
-        if (title != null && !title.trim().isEmpty()) {
-          return title;
-        }
-      }
-
-      return null;
-    });
   }
 
   @Override
@@ -50,18 +39,18 @@ public class NewsServiceImpl implements NewsService {
   @Override
   public NewsArticleResponse extractNaverNewsArticle(String url) {
     try {
-      String title = extractTitleAreaText(url);
-      if (title == null) {
-        exceptionHandler.handleTitleExtractionFailure(url, "extract Naver news article",
-            new Exception("Title extraction failed"));
-      }
+      log.info("네이버 뉴스 기사 추출 시작: {}", url);
 
-      String date = dateExtractorService.extractArticleDate(url);
-      String content = extractNewsArticleContent(url);
+      // 새로운 팩토리 패턴 사용
+      NewsArticleResponse newsData = newsExtractorFactory.extractNews(url);
 
-      return new NewsArticleResponse(title, date, content);
+      log.info("네이버 뉴스 기사 추출 완료 - 제목: {}, 날짜: {}, 내용 길이: {}",
+          newsData.getTitle(), newsData.getDate(), newsData.getContent().length());
+
+      return newsData;
 
     } catch (Exception e) {
+      log.error("네이버 뉴스 기사 추출 실패: {}", url, e);
       return null;
     }
   }

@@ -10,11 +10,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum NewsErrorStatus implements BaseErrorCode {
   NOT_NAVER_NEWS(HttpStatus.BAD_REQUEST, "NEWS4001", "네이버 뉴스 도메인이 아닙니다. 네이버 뉴스를 통한 링크만 가능합니다."),
-  NEWS_CONTENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "NEWS4002", "뉴스 내용을 찾을 수 없습니다."),
-  NEWS_TITLE_EXTRACTION_FAILED(HttpStatus.BAD_REQUEST, "NEWS4003", "뉴스 제목 추출에 실패했습니다."),
-  NEWS_DATE_EXTRACTION_FAILED(HttpStatus.BAD_REQUEST, "NEWS4004", "뉴스 날짜 추출에 실패했습니다."),
-  NEWS_ARTICLE_PARSING_FAILED(HttpStatus.BAD_REQUEST, "NEWS4005", "뉴스 기사 파싱에 실패했습니다."),
-  NEWS_NAVER_API_CALL_FAILED(HttpStatus.BAD_REQUEST, "NEWS4006", "네이버 API 호출에 실패했습니다."),
+  UNSUPPORTED_NEWS_SITE(HttpStatus.BAD_REQUEST, "NEWS4002",
+      "지원하지 않는 뉴스 사이트입니다. 현재 지원되는 사이트: 네이버뉴스, 연합뉴스, 뉴시스, 뉴스1, 노컷뉴스, 오마이뉴스 (네이버 뉴스에 최적화되어 있습니다.)"),
+  NEWS_CONTENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "NEWS4003", "뉴스 내용을 찾을 수 없습니다."),
+  NEWS_TITLE_EXTRACTION_FAILED(HttpStatus.BAD_REQUEST, "NEWS4004", "뉴스 제목 추출에 실패했습니다."),
+  NEWS_DATE_EXTRACTION_FAILED(HttpStatus.BAD_REQUEST, "NEWS4005", "뉴스 날짜 추출에 실패했습니다."),
+  NEWS_ARTICLE_PARSING_FAILED(HttpStatus.BAD_REQUEST, "NEWS4006", "뉴스 기사 파싱에 실패했습니다."),
+  NEWS_NAVER_API_CALL_FAILED(HttpStatus.BAD_REQUEST, "NEWS4007", "네이버 API 호출에 실패했습니다."),
   ;
 
   private final HttpStatus httpStatus;
