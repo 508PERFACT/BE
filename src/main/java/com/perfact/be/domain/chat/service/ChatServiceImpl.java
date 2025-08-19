@@ -1,14 +1,10 @@
 package com.perfact.be.domain.chat.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.perfact.be.domain.chat.converter.ChatLogConverter;
 import com.perfact.be.domain.chat.converter.ClovaApiConverter;
 import com.perfact.be.domain.chat.converter.JsonConverter;
-import com.perfact.be.domain.chat.dto.ChatLogListResponseDTO;
 import com.perfact.be.domain.chat.dto.ChatRequestDTO;
-import com.perfact.be.domain.chat.dto.ChatResponseDTO;
-import com.perfact.be.domain.chat.dto.RecommendQuestionsResponseDTO;
+import com.perfact.be.domain.chat.dto.ChatResponse;
 import com.perfact.be.domain.chat.entity.ChatLog;
 import com.perfact.be.domain.chat.entity.SenderType;
 import com.perfact.be.domain.chat.exception.ChatHandler;
@@ -38,7 +34,7 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public ChatResponseDTO sendMessage(Long reportId, ChatRequestDTO request) {
+  public ChatResponse.ChatResponseDTO sendMessage(Long reportId, ChatRequestDTO request) {
     try {
       log.info("채팅 메시지 요청 - reportId: {}, userInput: {}", reportId, request.getUserInput());
 
@@ -75,7 +71,7 @@ public class ChatServiceImpl implements ChatService {
       log.info("채팅 메시지 처리 완료 - reportId: {}, AI 응답 길이: {}",
           reportId, polishedResponse.length());
 
-      return ChatResponseDTO.builder()
+      return ChatResponse.ChatResponseDTO.builder()
           .aiResponse(polishedResponse)
           .build();
 
@@ -87,7 +83,7 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional(readOnly = true)
-  public ChatLogListResponseDTO getChatLogs(Long reportId) {
+  public ChatResponse.ChatLogListResponseDTO getChatLogs(Long reportId) {
     try {
       log.info("채팅 로그 조회 요청 - reportId: {}", reportId);
 
@@ -110,7 +106,7 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public RecommendQuestionsResponseDTO getRecommendQuestions(Long reportId) {
+  public ChatResponse.RecommendQuestionsResponseDTO getRecommendQuestions(Long reportId) {
     try {
       log.info("추천 질문 요청 - reportId: {}", reportId);
 
@@ -129,7 +125,7 @@ public class ChatServiceImpl implements ChatService {
 
       log.info("추천 질문 생성 완료 - reportId: {}, 질문 개수: {}", reportId, questions.size());
 
-      return RecommendQuestionsResponseDTO.builder()
+      return ChatResponse.RecommendQuestionsResponseDTO.builder()
           .questions(questions)
           .build();
 
