@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * 오마이뉴스 추출기
- * ohmynews.com 도메인의 뉴스 기사를 처리합니다.
- */
+// 오마이뉴스 추출기
 @Slf4j
 @Component
 public class OhMyNewsExtractor extends AbstractNewsExtractor {
@@ -67,10 +64,7 @@ public class OhMyNewsExtractor extends AbstractNewsExtractor {
     };
   }
 
-  /**
-   * 오마이뉴스 특화 날짜 추출
-   * div.atc-sponsor 안의 첫 번째 span.date에서 날짜 추출
-   */
+  // 오마이뉴스 특화 날짜 추출
   private String extractDate(Document doc) {
     try {
       // 오마이뉴스 날짜 선택자
@@ -111,10 +105,7 @@ public class OhMyNewsExtractor extends AbstractNewsExtractor {
     }
   }
 
-  /**
-   * 오마이뉴스 날짜 형식 변환
-   * "25.08.19 15:25" → "2025-08-19 15:25"
-   */
+  // 오마이뉴스 날짜 형식 변환
   private String convertOhMyNewsDate(String dateText) {
     try {
       // "25.08.19 15:25" 형식 매칭
@@ -148,9 +139,7 @@ public class OhMyNewsExtractor extends AbstractNewsExtractor {
     return contentElement.text().trim();
   }
 
-  /**
-   * 오마이뉴스 특화 불필요한 요소들 제거
-   */
+  // 오마이뉴스 특화 불필요한 요소들 제거
   private void removeOhMyNewsSpecificElements(Element contentElement) {
     // 광고 관련 요소들 제거
     contentElement.select("div[id*='ad'], div[id*='Ad'], .ad, .ads, .advertisement").remove();

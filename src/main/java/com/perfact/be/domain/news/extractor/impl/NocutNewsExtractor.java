@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * 노컷뉴스 추출기
- * nocutnews.co.kr 도메인의 뉴스 기사를 처리합니다.
- */
+// 노컷뉴스 추출기
 @Slf4j
 @Component
 public class NocutNewsExtractor extends AbstractNewsExtractor {
@@ -48,10 +45,7 @@ public class NocutNewsExtractor extends AbstractNewsExtractor {
     }
   }
 
-  /**
-   * 노컷뉴스 특화 날짜 추출
-   * ul.bl_b 안의 두 번째 li에서 날짜 추출
-   */
+  // 노컷뉴스 특화 날짜 추출
   private String extractDate(Document doc) {
     try {
       Elements dateElements = doc.select("ul.bl_b li");
@@ -115,9 +109,7 @@ public class NocutNewsExtractor extends AbstractNewsExtractor {
     return cleanedContent.toString().trim();
   }
 
-  /**
-   * 불필요한 HTML 요소들 제거
-   */
+  // 불필요한 HTML 요소들 제거
   private void removeUnnecessaryElements(Element contentElement) {
     // 광고 관련 요소 제거
     contentElement.select("iframe").remove();
@@ -134,9 +126,7 @@ public class NocutNewsExtractor extends AbstractNewsExtractor {
     contentElement.select("style").remove();
   }
 
-  /**
-   * 불필요한 텍스트인지 확인
-   */
+  // 불필요한 텍스트 확인
   private boolean isUnnecessaryText(String text) {
     if (text == null || text.trim().isEmpty()) {
       return true;

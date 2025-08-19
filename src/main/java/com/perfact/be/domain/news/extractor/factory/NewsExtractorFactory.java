@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * 뉴스 추출기 팩토리
- * URL에 따라 적절한 추출기를 선택합니다.
- */
+// 뉴스 추출기 팩토리
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -21,12 +18,7 @@ public class NewsExtractorFactory {
 
   private final List<NewsExtractorStrategy> extractors;
 
-  /**
-   * URL에 맞는 추출기를 찾아 뉴스를 추출합니다.
-   *
-   * @param url 뉴스 URL
-   * @return 추출된 뉴스 데이터
-   */
+  // URL에 맞는 추출기를 찾아 뉴스를 추출합니다.
   public NewsArticleResponse extractNews(String url) {
     log.info("뉴스 추출기 선택 시작: {}", url);
 
@@ -36,12 +28,7 @@ public class NewsExtractorFactory {
     return extractor.extract(url);
   }
 
-  /**
-   * URL에 맞는 추출기를 찾습니다.
-   *
-   * @param url 뉴스 URL
-   * @return 적절한 추출기
-   */
+  // URL에 맞는 추출기를 찾습니다.
   public NewsExtractorStrategy getExtractor(String url) {
     return extractors.stream()
         .filter(extractor -> extractor.canExtract(url))
@@ -52,11 +39,7 @@ public class NewsExtractorFactory {
         });
   }
 
-  /**
-   * 사용 가능한 모든 추출기를 반환합니다.
-   *
-   * @return 추출기 목록
-   */
+  // 사용 가능한 모든 추출기를 반환합니다.
   public List<NewsExtractorStrategy> getAllExtractors() {
     return extractors;
   }

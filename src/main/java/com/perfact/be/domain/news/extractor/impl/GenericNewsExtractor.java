@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
-/**
- * 일반 뉴스 사이트 추출기
- * 네이버 뉴스, 연합뉴스, 뉴시스, 노컷뉴스가 아닌 기타 뉴스 사이트를 처리합니다.
- */
+// 뉴스 도메인 라우팅 추출기
 @Slf4j
 @Component
 public class GenericNewsExtractor extends AbstractNewsExtractor {
@@ -22,7 +19,7 @@ public class GenericNewsExtractor extends AbstractNewsExtractor {
   @Override
   public boolean canExtract(String url) {
     // 네이버 뉴스, 연합뉴스, 뉴시스, 노컷뉴스가 아닌 모든 URL을 처리
-    return !url.contains("news.naver.com") && !url.contains("yna.co.kr") && !url.contains("newsis.com")
+    return !url.contains("news.naver.com") && !url.contains("yna.co.kr") && !url.contains("newsis.com") && !url.contains("news1.kr")
         && !url.contains("nocutnews.co.kr") && !url.contains("ohmynews.com");
   }
 

@@ -8,9 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-/**
- * 뉴시스 추출기
- */
+// 뉴시스 추출기
 @Slf4j
 @Component
 public class NewsisNewsExtractor extends AbstractNewsExtractor {
@@ -47,9 +45,7 @@ public class NewsisNewsExtractor extends AbstractNewsExtractor {
     }
   }
 
-  /**
-   * 뉴시스에서 날짜를 추출합니다.
-   */
+  // 뉴시스에서 날짜 추출
   private String extractDate(Document doc) {
     try {
       Element dateElement = doc.selectFirst(".txt");
@@ -71,9 +67,7 @@ public class NewsisNewsExtractor extends AbstractNewsExtractor {
     }
   }
 
-  /**
-   * 뉴시스 본문을 정제합니다.
-   */
+  // 뉴시스 본문 정제
   @Override
   protected String processContentElement(Element contentElement) {
     // 불필요한 요소들 제거
@@ -111,9 +105,7 @@ public class NewsisNewsExtractor extends AbstractNewsExtractor {
     return content.toString();
   }
 
-  /**
-   * 불필요한 요소들을 제거합니다.
-   */
+  // 불필요한 요소들 제거
   private void removeUnnecessaryElements(Element contentElement) {
     // 광고 관련 요소 제거
     contentElement.select("iframe").remove();
@@ -134,9 +126,7 @@ public class NewsisNewsExtractor extends AbstractNewsExtractor {
     contentElement.select(".desc").remove();
   }
 
-  /**
-   * 불필요한 텍스트인지 확인합니다.
-   */
+  // 불필요한 텍스트 확인
   private boolean isUnnecessaryText(String text) {
     // 기자 연락처 제거
     if (text.contains("◎공감언론 뉴시스") || text.contains("@newsis.com")) {

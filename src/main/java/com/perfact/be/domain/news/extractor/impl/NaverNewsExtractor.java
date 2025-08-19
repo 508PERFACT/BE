@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
-/**
- * 네이버 뉴스 추출기
- */
+// 네이버 뉴스 추출기
 @Slf4j
 @Component
 public class NaverNewsExtractor extends AbstractNewsExtractor {

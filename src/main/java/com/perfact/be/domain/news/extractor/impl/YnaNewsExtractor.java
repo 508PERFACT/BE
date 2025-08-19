@@ -8,9 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-/**
- * 연합뉴스 추출기
- */
+// 연합뉴스 추출기
 @Slf4j
 @Component
 public class YnaNewsExtractor extends AbstractNewsExtractor {
@@ -47,9 +45,7 @@ public class YnaNewsExtractor extends AbstractNewsExtractor {
     }
   }
 
-  /**
-   * 연합뉴스에서 날짜를 추출합니다.
-   */
+  // 연합뉴스에서 날짜 추출
   private String extractDate(Document doc) {
     try {
       Element dateElement = doc.selectFirst(".txt-time01");
@@ -69,9 +65,7 @@ public class YnaNewsExtractor extends AbstractNewsExtractor {
     }
   }
 
-  /**
-   * 연합뉴스 본문을 정제합니다.
-   */
+  // 연합뉴스 본문 정제
   @Override
   protected String processContentElement(Element contentElement) {
     // 불필요한 요소들 제거
@@ -109,9 +103,7 @@ public class YnaNewsExtractor extends AbstractNewsExtractor {
     return content.toString();
   }
 
-  /**
-   * 불필요한 요소들을 제거합니다.
-   */
+  // 불필요한 요소들 제거
   private void removeUnnecessaryElements(Element contentElement) {
     // 광고 관련 요소 제거
     contentElement.select("aside").remove();
@@ -130,9 +122,7 @@ public class YnaNewsExtractor extends AbstractNewsExtractor {
     contentElement.select(".swiper-area").remove();
   }
 
-  /**
-   * 불필요한 텍스트인지 확인합니다.
-   */
+  // 불필요한 텍스트 확인
   private boolean isUnnecessaryText(String text) {
     // 이메일 주소 제거
     if (text.contains("@") && text.contains(".co.kr")) {

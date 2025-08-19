@@ -11,10 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-/**
- * 뉴스 추출기 추상 클래스
- * 공통 로직을 제공합니다.
- */
+// 뉴스 추출기 추상 클래스
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
@@ -22,13 +19,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
   protected final HtmlParserService htmlParserService;
   protected final DateExtractorService dateExtractorService;
 
-  /**
-   * HTML 문서에서 제목을 추출합니다.
-   *
-   * @param doc            HTML 문서
-   * @param titleSelectors 제목 셀렉터 배열
-   * @return 추출된 제목
-   */
+  // HTML 문서에서 제목 추출
   protected String extractTitle(Document doc, String[] titleSelectors) {
     for (String selector : titleSelectors) {
       Element titleElement = doc.selectFirst(selector);
@@ -44,13 +35,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
     return "제목을 찾을 수 없습니다";
   }
 
-  /**
-   * HTML 문서에서 내용을 추출합니다.
-   *
-   * @param doc              HTML 문서
-   * @param contentSelectors 내용 셀렉터 배열
-   * @return 추출된 내용
-   */
+  // HTML 문서에서 내용 추출
   protected String extractContent(Document doc, String[] contentSelectors) {
     for (String selector : contentSelectors) {
       Element contentElement = doc.selectFirst(selector);
@@ -66,12 +51,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
     return "내용을 찾을 수 없습니다";
   }
 
-  /**
-   * 내용 요소를 처리합니다.
-   *
-   * @param contentElement 내용 요소
-   * @return 처리된 내용
-   */
+  // 내용 요소 처리
   protected String processContentElement(Element contentElement) {
     StringBuilder content = new StringBuilder();
 
@@ -105,12 +85,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
     return content.toString();
   }
 
-  /**
-   * HTML 문서를 가져옵니다.
-   *
-   * @param url URL
-   * @return HTML 문서
-   */
+  // HTML 문서 가져오기
   protected Document getDocument(String url) {
     try {
       return htmlParserService.getHtmlFromUrl(url);
@@ -120,12 +95,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
     }
   }
 
-  /**
-   * 날짜를 추출합니다.
-   *
-   * @param url URL
-   * @return 추출된 날짜
-   */
+  // 날짜 추출
   protected String extractDate(String url) {
     try {
       return dateExtractorService.extractArticleDate(url);
@@ -135,17 +105,9 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
     }
   }
 
-  /**
-   * 도메인별 제목 셀렉터를 반환합니다.
-   *
-   * @return 제목 셀렉터 배열
-   */
+  // 도메인별 제목 셀렉터 반환
   protected abstract String[] getTitleSelectors();
 
-  /**
-   * 도메인별 내용 셀렉터를 반환합니다.
-   *
-   * @return 내용 셀렉터 배열
-   */
+  // 도메인별 내용 셀렉터 반환
   protected abstract String[] getContentSelectors();
 }
