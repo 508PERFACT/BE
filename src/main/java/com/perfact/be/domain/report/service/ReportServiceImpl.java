@@ -361,7 +361,7 @@ public class ReportServiceImpl implements ReportService {
         messages,
         0.8,
         0,
-        4096,
+        1024,
         0.5,
         1.1,
         new ArrayList<>(),
