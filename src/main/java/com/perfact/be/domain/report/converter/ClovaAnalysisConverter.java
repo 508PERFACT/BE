@@ -232,12 +232,30 @@ public class ClovaAnalysisConverter {
         int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
         int day = Integer.parseInt(parts[2]);
-        return LocalDate.of(year, month, day);
+        LocalDate result = LocalDate.of(year, month, day);
+        log.debug("결과: {}", result);
+        return result;
+      }
+
+      // "2025-07-25 15:50" 형식 처리 (노컷뉴스, 오마이뉴스 등)
+      log.debug("2025-07-25 15:50 형식 매칭 시도: {}", cleanDate.matches("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}"));
+      if (cleanDate.matches("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}")) {
+        log.debug("2025-07-25 15:50 형식 매칭됨");
+        String[] parts = cleanDate.split("\\s+")[0].split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        int day = Integer.parseInt(parts[2]);
+        LocalDate result = LocalDate.of(year, month, day);
+        log.debug("결과: {}", result);
+        return result;
       }
 
       // 기존 로직 (ISO 형식)
       if (cleanDate.length() >= 10) {
-        return LocalDate.parse(cleanDate.substring(0, 10));
+        log.debug("ISO 형식 처리");
+        LocalDate result = LocalDate.parse(cleanDate.substring(0, 10));
+        log.debug("결과: {}", result);
+        return result;
       }
 
       return LocalDate.now();
