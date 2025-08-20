@@ -32,7 +32,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
       }
     }
     log.warn("제목을 찾을 수 없습니다. 사용된 셀렉터: {}", String.join(", ", titleSelectors));
-    return "제목을 찾을 수 없습니다";
+    throw new NewsHandler(NewsErrorStatus.NEWS_TITLE_EXTRACTION_FAILED);
   }
 
   // HTML 문서에서 내용 추출
@@ -48,7 +48,7 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
       }
     }
     log.warn("내용을 찾을 수 없습니다. 사용된 셀렉터: {}", String.join(", ", contentSelectors));
-    return "내용을 찾을 수 없습니다";
+    throw new NewsHandler(NewsErrorStatus.NEWS_CONTENT_NOT_FOUND);
   }
 
   // 내용 요소 처리
@@ -98,10 +98,14 @@ public abstract class AbstractNewsExtractor implements NewsExtractorStrategy {
   // 날짜 추출
   protected String extractDate(String url) {
     try {
-      return dateExtractorService.extractArticleDate(url);
+      String date = dateExtractorService.extractArticleDate(url);
+      if (date == null || date.equals("날짜 정보 없음")) {
+        throw new NewsHandler(NewsErrorStatus.NEWS_DATE_EXTRACTION_FAILED);
+      }
+      return date;
     } catch (Exception e) {
       log.warn("날짜 추출 실패: {}", url, e);
-      return "날짜 정보 없음";
+      throw new NewsHandler(NewsErrorStatus.NEWS_DATE_EXTRACTION_FAILED);
     }
   }
 

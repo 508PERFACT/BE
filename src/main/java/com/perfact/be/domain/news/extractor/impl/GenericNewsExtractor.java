@@ -18,14 +18,14 @@ public class GenericNewsExtractor extends AbstractNewsExtractor {
 
   @Override
   public boolean canExtract(String url) {
-    // 네이버 뉴스, 연합뉴스, 뉴시스, 노컷뉴스가 아닌 모든 URL을 처리
-    return !url.contains("news.naver.com") && !url.contains("yna.co.kr") && !url.contains("newsis.com")
-        && !url.contains("nocutnews.co.kr") && !url.contains("ohmynews.com");
+    // 지원하는 뉴스 사이트들만 처리하고, 나머지는 거부
+    return url.contains("news.naver.com") || url.contains("yna.co.kr") || url.contains("newsis.com")
+        || url.contains("nocutnews.co.kr"); //|| url.contains("ohmynews.com");
   }
 
   @Override
   public NewsArticleResponse extract(String url) {
-    log.info("일반 뉴스 사이트 판별: {}", url);
+    log.info("지원하는 뉴스 사이트 처리: {}", url);
 
     try {
       Document doc = getDocument(url);
@@ -37,7 +37,7 @@ public class GenericNewsExtractor extends AbstractNewsExtractor {
       return new NewsArticleResponse(title, date, content);
 
     } catch (Exception e) {
-      log.error("일반 뉴스 사이트 판별 실패: {}", url, e);
+      log.error("뉴스 사이트 처리 실패: {}", url, e);
       throw e;
     }
   }

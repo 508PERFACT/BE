@@ -67,33 +67,30 @@ public class OhMyNewsExtractor extends AbstractNewsExtractor {
   // 오마이뉴스 특화 날짜 추출
   private String extractDate(Document doc) {
     try {
-      // 오마이뉴스 날짜 선택자
-      Elements dateElements = doc.select("div.atc-sponsor span.date");
+      // 오마이뉴스 날짜 선택자들 (우선순위 순)
+      String[] dateSelectors = {
+          "div.atc-sponsor span.date", // 기존 셀렉터
+          "span.date", // 직접 span.date
+          ".date", // 클래스로만
+          "[class*='date']" // 클래스에 date 포함
+      };
 
-      if (!dateElements.isEmpty()) {
-        // 첫 번째 date span 사용
-        Element firstDateElement = dateElements.first();
-        String dateText = firstDateElement.text().trim();
+      for (String selector : dateSelectors) {
+        Elements dateElements = doc.select(selector);
 
-        log.debug("오마이뉴스 원본 날짜 텍스트: {}", dateText);
+        if (!dateElements.isEmpty()) {
+          Element firstDateElement = dateElements.first();
+          String dateText = firstDateElement.text().trim();
 
-        // "25.08.19 15:25" 형식을 "2025-08-19 15:25" 형식으로 변환
-        String convertedDate = convertOhMyNewsDate(dateText);
+          log.debug("오마이뉴스 원본 날짜 텍스트: {}", dateText);
 
-        if (convertedDate != null) {
-          log.info("오마이뉴스 날짜 변환 성공: {} → {}", dateText, convertedDate);
-          return convertedDate;
-        }
-      }
+          // "25.08.19 15:25" 또는 "25.08.19 19:00" 형식을 "2025-08-19 15:25" 형식으로 변환
+          String convertedDate = convertOhMyNewsDate(dateText);
 
-      // fallback: 다른 날짜 선택자들 시도
-      Elements fallbackElements = doc.select("span.date, .date, [class*='date']");
-      for (Element element : fallbackElements) {
-        String text = element.text().trim();
-        String convertedDate = convertOhMyNewsDate(text);
-        if (convertedDate != null) {
-          log.info("fallback으로 오마이뉴스 날짜 추출 성공: {} → {}", text, convertedDate);
-          return convertedDate;
+          if (convertedDate != null) {
+            log.info("오마이뉴스 날짜 변환 성공: {} → {}", dateText, convertedDate);
+            return convertedDate;
+          }
         }
       }
 
@@ -108,20 +105,24 @@ public class OhMyNewsExtractor extends AbstractNewsExtractor {
   // 오마이뉴스 날짜 형식 변환
   private String convertOhMyNewsDate(String dateText) {
     try {
-      // "25.08.19 15:25" 형식 매칭
-      Pattern pattern = Pattern.compile("(\\d{2})\\.(\\d{2})\\.(\\d{2})\\s+(\\d{2}:\\d{2})");
+      // "25.08.19 15:25" 또는 "25.08.19 19:00" 형식 매칭 (시간이 1자리 또는 2자리)
+      Pattern pattern = Pattern.compile("(\\d{2})\\.(\\d{2})\\.(\\d{2})\\s+(\\d{1,2}):(\\d{2})");
       Matcher matcher = pattern.matcher(dateText);
 
       if (matcher.find()) {
         String year = matcher.group(1);
         String month = matcher.group(2);
         String day = matcher.group(3);
-        String time = matcher.group(4);
+        int hour = Integer.parseInt(matcher.group(4));
+        String minute = matcher.group(5);
 
         // 20xx년으로 변환 (25 → 2025)
         String fullYear = "20" + year;
 
-        return String.format("%s-%s-%s %s", fullYear, month, day, time);
+        // 시간을 2자리로 포맷팅
+        String formattedHour = String.format("%02d", hour);
+
+        return String.format("%s-%s-%s %s:%s", fullYear, month, day, formattedHour, minute);
       }
 
       return null;
@@ -150,8 +151,19 @@ public class OhMyNewsExtractor extends AbstractNewsExtractor {
     contentElement.select("button.zoom-btn, button.rhksfus").remove();
     contentElement.select("figure.omn-photo").remove();
 
+    // 이미지 관련 요소들 제거
+    contentElement.select("figure, .pho-center, .pho-caption").remove();
+    contentElement.select("img[src*='ohmynews.com']").remove();
+
     // 기타 불필요한 요소들
     contentElement.select("div[id*='google'], div[id*='Google']").remove();
     contentElement.select("div[class*='ad'], div[class*='Ad']").remove();
+
+    // HTML 주석 제거
+    contentElement.select("*").forEach(element -> {
+      if (element.nodeName().equals("#comment")) {
+        element.remove();
+      }
+    });
   }
 }

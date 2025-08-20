@@ -61,11 +61,15 @@ public class ReportServiceImpl implements ReportService {
   @Override
   public Object analyzeNewsWithClova(String url) {
     try {
-      if (newsService.isNaverNewsDomain(url)) {
-        return analyzeNaverNews(url);
-      } else {
-        return analyzeOtherNewsSite(url);
-      }
+      // 모든 뉴스 사이트에 대해 동일한 방식으로 처리
+      NewsArticleResponse newsData = newsExtractorFactory.extractNews(url);
+      ClovaRequestDTO request = createClovaRequest(newsData);
+      ClovaResponseDTO response = callClovaAPI(request);
+      return parseJsonResponse(response.getResult().getMessage().getContent());
+    } catch (com.perfact.be.domain.news.exception.NewsHandler e) {
+      // NewsHandler는 그대로 전달 (지원하지 않는 뉴스 사이트 등)
+      log.error("뉴스 추출 실패 - URL: {}, 에러: {}", url, e.getMessage(), e);
+      throw e;
     } catch (Exception e) {
       log.error("Clova API 분석 실패 - URL: {}, 에러: {}", url, e.getMessage(), e);
       throw new ReportHandler(ReportErrorStatus.CLOVA_API_CALL_FAILED);
@@ -76,15 +80,8 @@ public class ReportServiceImpl implements ReportService {
   @Transactional
   public Report createReportFromAnalysis(Object analysisResult, String url, User user) {
     try {
-      // 1. 뉴스 데이터 추출
-      NewsArticleResponse newsData;
-      if (newsService.isNaverNewsDomain(url)) {
-        newsData = newsService.extractNaverNewsArticle(url);
-      } else {
-        String title = newsService.extractTitleFromOtherNewsSites(url);
-        String content = newsService.extractNewsArticleContent(url);
-        newsData = new NewsArticleResponse(title, "날짜 정보 없음", content);
-      }
+      // 1. 뉴스 데이터 추출 - 모든 뉴스 사이트에 대해 동일한 방식으로 처리
+      NewsArticleResponse newsData = newsExtractorFactory.extractNews(url);
 
       // 2. 분석 결과를 JSON 문자열로 변환
       log.debug("분석 결과 객체 타입: {}", analysisResult.getClass().getSimpleName());
@@ -114,6 +111,10 @@ public class ReportServiceImpl implements ReportService {
       }
 
       return savedReport;
+    } catch (com.perfact.be.domain.news.exception.NewsHandler e) {
+      // NewsHandler는 그대로 전달 (지원하지 않는 뉴스 사이트 등)
+      log.error("뉴스 추출 실패 - URL: {}, 사용자: {}, 에러: {}", url, user.getId(), e.getMessage(), e);
+      throw e;
     } catch (Exception e) {
       log.error("분석 결과로부터 리포트 생성 실패 - URL: {}, 사용자: {}, 에러: {}", url, user.getId(), e.getMessage(), e);
       throw new ReportHandler(ReportErrorStatus.REPORT_CREATION_FAILED);
@@ -124,21 +125,8 @@ public class ReportServiceImpl implements ReportService {
   @Transactional
   public Report analyzeNewsAndCreateReport(String url, User user) {
     try {
-      // 1. 뉴스 데이터 추출
-      NewsArticleResponse newsData;
-      if (newsService.isNaverNewsDomain(url)) {
-        newsData = newsService.extractNaverNewsArticle(url);
-      } else {
-        // 다른 뉴스 사이트의 경우에도 팩토리를 사용해서 완전한 정보 추출
-        try {
-          newsData = newsExtractorFactory.extractNews(url);
-        } catch (Exception e) {
-          log.warn("뉴스 추출기로 추출 실패, 기존 방식으로 fallback: {}", url);
-          String title = newsService.extractTitleFromOtherNewsSites(url);
-          String content = newsService.extractNewsArticleContent(url);
-          newsData = new NewsArticleResponse(title, "날짜 정보 없음", content);
-        }
-      }
+      // 1. 뉴스 데이터 추출 - 모든 뉴스 사이트에 대해 동일한 방식으로 처리
+      NewsArticleResponse newsData = newsExtractorFactory.extractNews(url);
 
       // 2. Clova API 분석 수행
       Object analysisResult = analyzeNewsWithClova(url);
@@ -169,6 +157,10 @@ public class ReportServiceImpl implements ReportService {
       }
 
       return savedReport;
+    } catch (com.perfact.be.domain.news.exception.NewsHandler e) {
+      // NewsHandler는 그대로 전달 (지원하지 않는 뉴스 사이트 등)
+      log.error("뉴스 추출 실패 - URL: {}, 사용자: {}, 에러: {}", url, user.getId(), e.getMessage(), e);
+      throw e;
     } catch (Exception e) {
       log.error("리포트 생성 실패 - URL: {}, 사용자: {}, 에러: {}", url, user.getId(), e.getMessage(), e);
       throw new ReportHandler(ReportErrorStatus.REPORT_CREATION_FAILED);
@@ -202,39 +194,6 @@ public class ReportServiceImpl implements ReportService {
     List<ReportBadge> reportBadges = reportBadgeRepository.findByReportId(reportId);
 
     return ReportResponseDto.from(report, trueScore, reportBadges);
-  }
-
-  private Object analyzeNaverNews(String url) {
-    try {
-      NewsArticleResponse newsData = newsService.extractNaverNewsArticle(url);
-      ClovaRequestDTO request = createClovaRequest(newsData);
-      ClovaResponseDTO response = callClovaAPI(request);
-      return parseJsonResponse(response.getResult().getMessage().getContent());
-    } catch (Exception e) {
-      log.error("네이버 뉴스 분석 실패 - URL: {}, 에러: {}", url, e.getMessage(), e);
-      throw new ReportHandler(ReportErrorStatus.CLOVA_API_CALL_FAILED);
-    }
-  }
-
-  private Object analyzeOtherNewsSite(String url) {
-    try {
-      // 다른 뉴스 사이트의 경우에도 팩토리를 사용해서 완전한 정보 추출
-      NewsArticleResponse newsData;
-      try {
-        newsData = newsExtractorFactory.extractNews(url);
-      } catch (Exception e) {
-        log.warn("뉴스 추출기로 추출 실패, 기존 방식으로 fallback: {}", url);
-        String title = newsService.extractTitleFromOtherNewsSites(url);
-        String content = newsService.extractNewsArticleContent(url);
-        newsData = new NewsArticleResponse(title, "날짜 정보 없음", content);
-      }
-      ClovaRequestDTO request = createClovaRequest(newsData);
-      ClovaResponseDTO response = callClovaAPI(request);
-      return parseJsonResponse(response.getResult().getMessage().getContent());
-    } catch (Exception e) {
-      log.error("기타 뉴스 사이트 분석 실패 - URL: {}, 에러: {}", url, e.getMessage(), e);
-      throw new ReportHandler(ReportErrorStatus.CLOVA_API_CALL_FAILED);
-    }
   }
 
   private Object parseJsonResponse(String analysisResult) {

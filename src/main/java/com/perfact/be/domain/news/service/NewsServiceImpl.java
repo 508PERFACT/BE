@@ -32,30 +32,6 @@ public class NewsServiceImpl implements NewsService {
   }
 
   @Override
-  public boolean isNaverNewsDomain(String url) {
-    return url.contains("news.naver.com");
-  }
-
-  @Override
-  public NewsArticleResponse extractNaverNewsArticle(String url) {
-    try {
-      log.info("네이버 뉴스 기사 추출 시작: {}", url);
-
-      // 새로운 팩토리 패턴 사용
-      NewsArticleResponse newsData = newsExtractorFactory.extractNews(url);
-
-      log.info("네이버 뉴스 기사 추출 완료 - 제목: {}, 날짜: {}, 내용 길이: {}",
-          newsData.getTitle(), newsData.getDate(), newsData.getContent().length());
-
-      return newsData;
-
-    } catch (Exception e) {
-      log.error("네이버 뉴스 기사 추출 실패: {}", url, e);
-      return null;
-    }
-  }
-
-  @Override
   public String extractTitleFromOtherNewsSites(String url) {
     return newsExtractorService.extractTitleFromOtherNewsSites(url);
   }
