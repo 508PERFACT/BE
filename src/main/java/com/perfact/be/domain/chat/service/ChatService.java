@@ -1,14 +1,13 @@
 package com.perfact.be.domain.chat.service;
 
-import com.perfact.be.domain.chat.dto.ChatLogListResponseDTO;
-import com.perfact.be.domain.chat.dto.ChatRequestDTO;
-import com.perfact.be.domain.chat.dto.ChatResponseDTO;
-import com.perfact.be.domain.chat.dto.RecommendQuestionsResponseDTO;
+import com.perfact.be.domain.chat.dto.ChatRequest;
+import com.perfact.be.domain.chat.dto.ChatResponse;
+
 
 public interface ChatService {
-  ChatResponseDTO sendMessage(Long reportId, ChatRequestDTO request);
+  ChatResponse.ChatResponseDTO sendMessage(Long reportId, ChatRequest request);
 
-  ChatLogListResponseDTO getChatLogs(Long reportId);
+  ChatResponse.ChatLogListResponseDTO getChatLogs(Long reportId);
 
-  RecommendQuestionsResponseDTO getRecommendQuestions(Long reportId);
+  ChatResponse.RecommendQuestionsResponseDTO getRecommendQuestions(Long reportId);
 }

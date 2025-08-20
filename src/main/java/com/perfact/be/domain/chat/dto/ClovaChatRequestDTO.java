@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Clova 채팅 API 요청 DTO")
+@Schema(description = "Clova 공통 요청 DTO")
 public class ClovaChatRequestDTO {
 
   private List<Message> messages;
